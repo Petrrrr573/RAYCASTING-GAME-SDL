@@ -29,9 +29,11 @@ int map[] = {
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 };
 
-int xPos = 100;
-int yPos = 100;
-float pdx, pdy, pa;
+double xPos = 100;
+double yPos = 100;
+double pdx, pdy, pa;
+
+int lastFrame, frameCount, fps;
 
 void DrawMap(SDL_Renderer* renderer, int mapX, int mapY, int mapS, int* map, SDL_Rect player_rect) {
 	int x, y;
@@ -40,7 +42,7 @@ void DrawMap(SDL_Renderer* renderer, int mapX, int mapY, int mapS, int* map, SDL
 	for (y = 0; y < mapY; y++) {
 		for (x = 0; x < mapX; x++) {
 			if (map[y * mapX + x] == 1) {
-				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+				SDL_SetRenderDrawColor(renderer, 35, 35, 35, 255);
 				SDL_Rect rect = { x * (mapS / mapX) + 1, y * (mapS / mapY) + 1, mapS / mapX - 1, mapS / mapY - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
@@ -49,7 +51,7 @@ void DrawMap(SDL_Renderer* renderer, int mapX, int mapY, int mapS, int* map, SDL
 
 	// Draw the horizontal grid lines
 	for (y = 0; y < mapY; y++) {
-		SDL_SetRenderDrawColor(renderer, 35, 35, 35, 255);
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_RenderDrawLine(renderer, 0, y * (mapS / mapY), mapS, y * (mapS / mapY));
 	}
 
@@ -61,79 +63,52 @@ void DrawMap(SDL_Renderer* renderer, int mapX, int mapY, int mapS, int* map, SDL
 
 	/*SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	SDL_RenderFillRect(renderer, &player_rect);*/
-	SDL_SetRenderDrawColor(renderer, 125, 125, 125, 255);
+	//SDL_SetRenderDrawColor(renderer, 125, 125, 125, 255);
 }
 
-void Input(bool &isRunning, int player_speed, int w_tille, int mapX, int mapY, int mapS, int* map, int &xPos, int &yPos,float &pdx, float &pdy, float& pa, int PLAYER_WIDTH, int PLAYER_HEIGHT, int &currentFrame, float RAD_PER_FRAME) {
+void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, int mapS, int* map, double& xPos, double& yPos, double& pdx, double& pdy, double& pa, int PLAYER_WIDTH, int PLAYER_HEIGHT, int& currentFrame, double RAD_PER_FRAME) {
 	if (currentFrame >= 32) { currentFrame = 0; }
 	else if (currentFrame < 0) { currentFrame = 31; }
+
 	SDL_Event event;
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			isRunning = false;
-			break;
 
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym)
-			{
-			case SDLK_ESCAPE:
-				isRunning = false;
+	const Uint8* state = SDL_GetKeyboardState(NULL);
 
-			case SDLK_a:
-				if (map[int((floor(yPos) / w_tille)) * mapX + int(floor((xPos - player_speed) / w_tille))] == 0) {
-					if (map[int((floor(yPos + PLAYER_WIDTH * 4) / w_tille)) * mapX + int(floor((xPos - player_speed) / w_tille))] == 0) {
-						currentFrame += 1;
-						pa -= RAD_PER_FRAME;
-						if (pa < 0) {
-							pa += 2 * PI;
-						}
-						pdx = cos(pa)*5; 
-						pdy = sin(pa)*5;
-					}
-				}
-				break;
+	SDL_PollEvent(&event);
 
-			case SDLK_d:
-				if (map[int((floor(yPos + PLAYER_WIDTH * 4) / w_tille)) * mapX + int(floor((xPos + PLAYER_WIDTH * 4 + player_speed) / w_tille))] == 0) {
-					if (map[int((floor(yPos) / w_tille)) * mapX + int(floor((xPos + PLAYER_WIDTH * 4 + player_speed) / w_tille))] == 0) {
-						currentFrame -= 1;
-						pa += RAD_PER_FRAME;
-						if (pa > 2) {
-							pa -= 2 * PI;
-						}
-						pdx = cos(pa) * 5;
-						pdy = sin(pa) * 5;
-					}
-				}
-				break;
-
-			case SDLK_w:
-				if (map[int((floor(yPos - player_speed-1) / w_tille)) * mapX + int(floor((xPos) / w_tille))] == 0) {
-					if (map[int((floor(yPos - player_speed-1) / w_tille)) * mapX + int(floor((xPos + PLAYER_WIDTH * 4) / w_tille))] == 0) {
-
-						xPos += pdx;
-						yPos += pdy;
-					}
-				}
-				break;
-
-			case SDLK_s:
-				if (map[int((floor(yPos + PLAYER_WIDTH * 4 + player_speed) / w_tille)) * mapX + int(floor((xPos + PLAYER_WIDTH * 4) / w_tille))] == 0) {
-					if (map[int((floor(yPos + PLAYER_WIDTH * 4 + player_speed) / w_tille)) * mapX + int(floor((xPos) / w_tille))] == 0) {
-
-						xPos -= pdx;
-						yPos -= pdy;
-					}
-				}
-				break;
-			}
-			break;
-		}
+	if (state[SDL_SCANCODE_ESCAPE]) {
+		isRunning = false;
 	}
-	
+
+	if (state[SDL_SCANCODE_A]) {
+		currentFrame += 1;
+		pa -= RAD_PER_FRAME;
+		if (pa < 0) {
+			pa += 2 * PI;
+		}
+		pdx = cos(pa) * 3;
+		pdy = sin(pa) * 3;
+	}
+
+	if (state[SDL_SCANCODE_D]) {
+		currentFrame -= 1;
+		pa += RAD_PER_FRAME;
+		if (pa > 2 * PI) {
+			pa -= 2 * PI;
+		}
+		pdx = cos(pa) * 3;
+		pdy = sin(pa) * 3;
+	}
+
+	if (state[SDL_SCANCODE_W]) {
+		xPos += pdx;
+		yPos += pdy;
+	}
+
+	if (state[SDL_SCANCODE_S]) {
+		xPos -= pdx;
+		yPos -= pdy;
+	}
 }
 
 int main(int argc, char** argv){
@@ -158,30 +133,47 @@ int main(int argc, char** argv){
 	const int PLAYER_FRAME_COUNT = 32; // Total number of frames in the texture
 	const int FRAMES_PER_ROW = 32; // Number of frames per row in the texture
 
-	const float ANGLE_PER_FRAME = 360 / FRAMES_PER_ROW;
-	const float RAD_PER_FRAME = PI * ANGLE_PER_FRAME / 180;
+	const double ANGLE_PER_FRAME = static_cast<double>(360) / FRAMES_PER_ROW;
+	const double RAD_PER_FRAME = PI * ANGLE_PER_FRAME / 180;
 
 	int currentFrame = 0;
+
+
+	static int lastTime;
 
 	// Variables to store the player's position
 	pdx = cos(pa) * 5;
 	pdy = sin(pa) * 5;
 
-	SDL_Surface* playerSurface = IMG_Load("C:\\Users\\Petr\\Downloads\\player.png");
+	SDL_Surface* playerSurface = IMG_Load("C:\\Users\\Petr\\Desktop\\player.png");
 	SDL_Texture* playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
 
 
 	while (isRunning) {
-		Input(isRunning, player_speed, w_tille, mapX, mapY, mapS, map, xPos, yPos, pdx, pdy, pa,  PLAYER_WIDTH, PLAYER_HEIGHT, currentFrame, RAD_PER_FRAME); // Movement, QUIT
+		// Limiting the FPS
+		lastFrame = SDL_GetTicks();
+		if (lastFrame >= (lastFrame + 1000)) {
+			lastTime = lastFrame;
+			fps = frameCount;
+			frameCount = 0;
+
+		}
+		frameCount++;
+		int timerFPS = SDL_GetTicks() - lastFrame;
+		if (timerFPS < (1000 / 60)) {
+			SDL_Delay((1000 / 60)-timerFPS);
+		}
+
+
+		Input(isRunning, player_speed, w_tille, mapX, mapY, mapS, map, xPos, yPos, pdx, pdy, pa, PLAYER_WIDTH, PLAYER_HEIGHT, currentFrame, RAD_PER_FRAME); // Movement, QUIT
 
 		SDL_RenderClear(renderer);
 
 		DrawMap(renderer, mapX, mapY, mapS, map, player_rect); // Draws the map
  
+
 		 // Calculate the source rectangle based on the current frame
-
-
 		int srcX = round(currentFrame * PLAYER_WIDTH);
 		int srcY = 0; // Since all frames are on a single row, y is always 0
 
@@ -192,12 +184,10 @@ int main(int argc, char** argv){
 		// Render the player's current frame
 		SDL_RenderCopy(renderer, playerTexture, &srcRect, &destRect);
 
-		SDL_SetRenderDrawColor(renderer, 90, 90, 0, 255);
-		SDL_RenderDrawLine(renderer, xPos+16, yPos+16, xPos + pdx * 5+16, yPos + pdy *5+16);
-		SDL_RenderDrawLine(renderer, xPos + 16, yPos + 16, xPos + pdx * 5 + 15, yPos + pdy * 5 + 15);
-		SDL_RenderDrawLine(renderer, xPos + 16, yPos + 16, xPos + pdx * 5 + 17, yPos + pdy * 5 + 17);
+		SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+		SDL_RenderDrawLine(renderer, xPos + 16, yPos + 16, xPos + 16 + pdx*50, yPos + 16 + pdy*50);
 
-		SDL_SetRenderDrawColor(renderer, 90, 90, 90, 2);
+		SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
 
 		SDL_RenderPresent(renderer);
 	}
