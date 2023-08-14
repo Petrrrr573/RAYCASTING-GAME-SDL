@@ -8,25 +8,17 @@
 #define PI 3.1415926535
 
 
-int mapX = 16, mapY = 16, mapS = WIDTH;
+int mapX = 8, mapY = 8, mapS = 64;
 
 int map[] = {
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,1,1,0,1,1,0,0,0,0,0,1,
-	1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,
+	1,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,1,
+	1,0,0,1,0,0,1,1,
+	1,0,0,0,0,0,1,1,
+	1,0,0,0,0,0,1,1,
+	1,0,0,0,0,0,1,1,
 };
 
 double xPos = 100;
@@ -101,14 +93,30 @@ void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, i
 	}
 
 	if (state[SDL_SCANCODE_W]) {
-		xPos += pdx;
-		yPos += pdy;
+		if (map[int((floor(yPos + pdy) / w_tille)) * mapX + int(floor((xPos) / w_tille))] == 0 && map[int((floor(yPos + pdy) / w_tille)) * mapX + int(floor((xPos + 32) / w_tille))] == 0 && map[int((floor(yPos + pdy+32) / w_tille)) * mapX + int(floor((xPos+32) / w_tille))] == 0 && map[int((floor(yPos + pdy+32) / w_tille)) * mapX + int(floor((xPos) / w_tille))] == 0) {
+			yPos += pdy;
+		}
+		if (map[int((floor(yPos) / w_tille)) * mapX + int(floor((xPos + pdx) / w_tille))] == 0 && map[int((floor(yPos) / w_tille)) * mapX + int(floor((xPos + pdx + 32) / w_tille))] == 0 && map[int((floor(yPos + 32) / w_tille)) * mapX + int(floor((xPos + pdx + 32) / w_tille))] == 0 && map[int((floor(yPos + 32) / w_tille)) * mapX + int(floor((xPos + pdx) / w_tille))] == 0) {
+			xPos += pdx;
+		}
 	}
 
 	if (state[SDL_SCANCODE_S]) {
-		xPos -= pdx;
-		yPos -= pdy;
+		if (map[int((floor(yPos - pdy) / w_tille)) * mapX + int(floor((xPos) / w_tille))] == 0 && map[int((floor(yPos - pdy) / w_tille)) * mapX + int(floor((xPos + 32) / w_tille))] == 0 && map[int((floor(yPos - pdy + 32) / w_tille)) * mapX + int(floor((xPos + 32) / w_tille))] == 0 && map[int((floor(yPos - pdy + 32) / w_tille)) * mapX + int(floor((xPos) / w_tille))] == 0) {
+			yPos -= pdy;
+		}
+		if (map[int((floor(yPos) / w_tille)) * mapX + int(floor((xPos - pdx) / w_tille))] == 0 && map[int((floor(yPos) / w_tille)) * mapX + int(floor((xPos - pdx + 32) / w_tille))] == 0 && map[int((floor(yPos + 32) / w_tille)) * mapX + int(floor((xPos - pdx + 32) / w_tille))] == 0 && map[int((floor(yPos + 32) / w_tille)) * mapX + int(floor((xPos - pdx) / w_tille))] == 0) {
+			xPos -= pdx;
+		}
 	}
+}
+
+void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos, double pa, SDL_Renderer* renderer) {
+	
+
+
+	SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+	SDL_RenderDrawLine(renderer, xPos + 16, yPos + 16, 0, 0);
 }
 
 int main(int argc, char** argv){
@@ -171,6 +179,8 @@ int main(int argc, char** argv){
 		SDL_RenderClear(renderer);
 
 		DrawMap(renderer, mapX, mapY, mapS, map, player_rect); // Draws the map
+
+		//raycasting(mapX, mapY, mapS, map, xPos, yPos, pa, renderer);
  
 
 		 // Calculate the source rectangle based on the current frame
