@@ -1,3 +1,1 @@
-# RAYCASTING-GAME-SDL
-
-## IN PROGRESS ##
+## !!! IN PROGRESS !!!  ##
