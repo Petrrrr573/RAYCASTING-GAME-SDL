@@ -135,8 +135,26 @@ void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, i
 	}
 }
 
+double distance(double px, double py, double rx, double ry, double ra, double pa) {
+	double distance = 0;
+
+	double angle = ra - pa;
+
+	double x = rx - px;
+	double y = ry - py;
+
+	distance = x * cos(pa) + y * sin(pa);
+
+	return distance;
+}
+
 void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos, double pa, SDL_Renderer* renderer, int w_tille, int& currentFrame) {
 	double ry = -1, rx = -1;
+
+	double hy = 0, hx = 0;
+	double vy = 0, vx = 0;
+	double hd = 0, vd = 0;
+
 	double xo = 0, yo = 0;
 
 	double px = xPos + 16;
@@ -150,9 +168,9 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 
 	double ra = pa;
 
-	ra -= 0.523598776/2;
-	for (int r = 0; r < 10; r++) {
-		ra += 0.0174532925*3;
+	ra -= 0.523598776;
+	for (int r = 0; r < 60; r++) {
+		ra += 0.0174532925;
 		if (ra < 0) {
 			ra += 2 * PI;
 		}
@@ -194,7 +212,7 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 			mp = my * mapX + mx;
 
 			// hit wall
-			if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
+			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
 				dof = 8;
 				break;
 			}
@@ -204,13 +222,9 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 				ry += yo;
 			}
 		}
-		
-		if (rx >= 0 && rx <= 800) {
-			if (ry >= 0 && ry <= 800) {
-				SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-				SDL_RenderDrawLine(renderer, px, py, rx, ry);
-			}
-		}
+
+		hy = ry, hx = rx;
+		hd = distance(px, py, hx, hy, ra, pa);
 
 		// Check vertical lines
 
@@ -247,7 +261,7 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 			mp = my * mapX + mx;
 
 			// hit wall
-			if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
+			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
 				dof = 8;
 				break;
 			}
@@ -257,11 +271,38 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 				ry += yo;
 			}
 		}
+
+		vy = ry, vx = rx;
+		vd = distance(px, py, vx, vy, ra, pa);
+
+		if (hd>vd){
+			rx = vx;
+			ry = vy;
+		}
+		else if (hd<vd) {
+			rx = hx;
+			ry = hy;
+		}
 		
 		if (rx >= 0 && rx <= 800) {
 			if (ry >= 0 && ry <= 800) {
-				SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-				SDL_RenderDrawLine(renderer, px, py, rx, ry);
+				mx = int(floor(rx / w_tille));
+				my = int(floor(ry / w_tille));
+				mp = my * mapX + mx;
+
+				// hit wall
+				if (mp > 0 && mp < mapX * mapY) {
+					if (map[mp] == 1) {
+						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+					}
+					else if (map[mp] == 2) {
+						SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+					}
+					else {
+						SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					} 
+					SDL_RenderDrawLine(renderer, px, py, rx, ry);
+				}
 			}
 		}
 
