@@ -28,7 +28,7 @@ int map[] = {
 	1,0,0,0,0,1,1,0,1,1,0,0,0,0,0,1,
 	1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,2,2,2,0,0,1,
+	1,0,0,1,0,0,0,0,0,0,2,2,2,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -136,7 +136,7 @@ void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, i
 }
 
 void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos, double pa, SDL_Renderer* renderer, int w_tille, int& currentFrame) {
-	double ry = 0, rx = 0;
+	double ry = -1, rx = -1;
 	double xo = 0, yo = 0;
 
 	double px = xPos + 16;
@@ -150,9 +150,9 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 
 	double ra = pa;
 
-	ra -= 0.0872664626*4;
+	ra -= 0.523598776/2;
 	for (int r = 0; r < 10; r++) {
-		ra += 0.0174532925 * 4;
+		ra += 0.0174532925*3;
 		if (ra < 0) {
 			ra += 2 * PI;
 		}
@@ -169,44 +169,120 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 			dof = 8;
 		}
 
-		std::cout << ra << " " << currentFrame << std::endl;
-
 		// looking up
 		if (ra > PI) {
-			ry = floor(py / w_tille) * w_tille;
+			ry = floor(py / w_tille) * w_tille-1;
 			dy = py - ry;
 			rx = (dy) * aTan + px;
 			yo = -w_tille;
 			xo = -yo * aTan;
-			if (rx > 0 && rx < 800) {
-				if (ry > 0 && ry < 800) {
-					if (r == 8) {
-						SDL_SetRenderDrawColor(renderer, 255, 105, 180, 255);
-						SDL_RenderDrawLine(renderer, px, py, rx, ry);
-						SDL_Rect ray_rect = { rx - 5, ry - 5, 10, 10};
-						SDL_RenderDrawRect(renderer, &ray_rect);
-
-					}
-					else {
-						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-						SDL_RenderDrawLine(renderer, px, py, rx, ry);
-					}
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-					SDL_RenderDrawLine(renderer, px, py, px, ry);
-					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-					SDL_RenderDrawLine(renderer, px, ry, rx, ry);
-				}
-			}
 		}
 
 		// looking down
-		/*if (ra < PI) {
+		if (ra < PI) {
 			ry = floor(py / w_tille) * w_tille + w_tille;
 			dy = py - ry;
 			rx = (dy) * aTan + px;
 			yo = w_tille;
 			xo = -yo * aTan;
+		}
+		
+
+		while (dof < 8) {
+			mx = int(floor(rx / w_tille));
+			my = int(floor(ry / w_tille));
+			mp = my * mapX + mx;
+
+			// hit wall
+			if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
+				dof = 8;
+				break;
+			}
+			else {
+				dof++;
+				rx += xo;
+				ry += yo;
+			}
+		}
+		
+		if (rx >= 0 && rx <= 800) {
+			if (ry >= 0 && ry <= 800) {
+				SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+				SDL_RenderDrawLine(renderer, px, py, rx, ry);
+			}
+		}
+
+		// Check vertical lines
+
+		dof = 0;
+		double nTan = -tan(ra);
+
+		// looking straight up or down
+		if (ra == PI3 || ra == PI2) {
+			rx = px; ry = py;
+			dof = 8;
+		}
+
+		// looking right
+		if (ra < PI2 || ra > PI3) {
+			rx = floor(px / w_tille) * w_tille + w_tille;
+			dx = px - rx;
+			ry = (dx)*nTan + py;
+			xo = w_tille;
+			yo = -xo * nTan;
+		}
+
+		// looking left
+		if (ra > PI2 && ra < PI3) {
+			rx = floor(px / w_tille) * w_tille - 1;
+			dx = px - rx;
+			ry = (dx)*nTan + py;
+			xo = -w_tille;
+			yo = -xo * nTan;
+		}
+
+		while (dof < 8) {
+			mx = int(floor(rx / w_tille));
+			my = int(floor(ry / w_tille));
+			mp = my * mapX + mx;
+
+			// hit wall
+			if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
+				dof = 8;
+				break;
+			}
+			else {
+				dof++;
+				rx += xo;
+				ry += yo;
+			}
+		}
+		
+		if (rx >= 0 && rx <= 800) {
+			if (ry >= 0 && ry <= 800) {
+				SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+				SDL_RenderDrawLine(renderer, px, py, rx, ry);
+			}
+		}
+
+		// looking left
+		/*if (ra > PI2 && ra < PI3) {
+			rx = floor(px / w_tille) * w_tille + w_tille;
+			dx = px - rx;
+			ry = (dx)*Tan + py;
+			xo = -w_tille;
+			yo = -xo * Tan;
 		}*/
+
+		//// looking right
+		//if (ra < PI2 || ra > PI3) {
+		//	ry = floor(py / w_tille) * w_tille + w_tille;
+		//	dy = py - ry;
+		//	rx = (dy)*aTan + px;
+		//	yo = w_tille;
+		//	xo = -yo * aTan;
+		//}
+
 
 		//while (dof < 8) {
 		//	mx = int(floor(rx / w_tille));
@@ -216,6 +292,7 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 		//	// hit wall
 		//	if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
 		//		dof = 8;
+		//		break;
 		//	}
 		//	else {
 		//		dof++;
@@ -223,11 +300,15 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 		//		ry += yo;
 		//	}
 		//}
-
-		//if (rx > 0 && rx < 800) {
-		//	if (ry > 0 && ry < 800) {
+		//
+		//if (rx >= 0 && rx <= 800) {
+		//	if (ry >= 0 && ry <= 800) {
 		//		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-		//		SDL_RenderDrawLine(renderer, xPos + 16, yPos + 16, rx, ry);
+		//		SDL_RenderDrawLine(renderer, px, py, rx, ry);
+		//		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		//		SDL_RenderDrawLine(renderer, px, py, px, ry);
+		//		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+		//		SDL_RenderDrawLine(renderer, px, ry, rx, ry);
 		//	}
 		//}
 
