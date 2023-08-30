@@ -12,6 +12,8 @@
 #define PI2 PI/2
 #define PI3 3*PI/2
 
+#define RAD 0.0174532925
+
 
 int mapX = 16, mapY = 16, mapS = 256;
 
@@ -78,9 +80,7 @@ void DrawMap(SDL_Renderer* renderer, int mapX, int mapY, int mapS, int* map, SDL
 }
 
 void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, int mapS, int* map, double& xPos, double& yPos, double& pdx, double& pdy, double& pa, int PLAYER_WIDTH, int PLAYER_HEIGHT, int& currentFrame, double RAD_PER_FRAME) {
-	if (currentFrame == 0) {
-		pa = 0;
-	} else if (currentFrame >= 32) {
+	if (currentFrame >= 32) {
 		currentFrame = 0;
 	} else if (currentFrame < 0) {
 		currentFrame = 31;
@@ -98,7 +98,7 @@ void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, i
 
 	if (state[SDL_SCANCODE_A]) {
 		currentFrame += 1;
-		pa -= RAD_PER_FRAME;
+		pa -= RAD_PER_FRAME/2;
 		if (pa < 0) {
 			pa += 2 * PI;
 		}
@@ -108,7 +108,7 @@ void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, i
 
 	if (state[SDL_SCANCODE_D]) {
 		currentFrame -= 1;
-		pa += RAD_PER_FRAME;
+		pa += RAD_PER_FRAME/2;
 		if (pa > 2 * PI) {
 			pa -= 2 * PI;
 		}
@@ -138,8 +138,6 @@ void Input(bool& isRunning, int player_speed, int w_tille, int mapX, int mapY, i
 double distance(double px, double py, double rx, double ry, double ra, double pa) {
 	double distance = 0;
 
-	double angle = ra - pa;
-
 	double x = rx - px;
 	double y = ry - py;
 
@@ -155,6 +153,8 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 	double vy = 0, vx = 0;
 	double hd = 0, vd = 0;
 
+	double fd = 0;
+
 	double xo = 0, yo = 0;
 
 	double px = xPos + 16;
@@ -168,9 +168,13 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 
 	double ra = pa;
 
-	ra -= 0.523598776;
-	for (int r = 0; r < 60; r++) {
-		ra += 0.0174532925;
+	bool horizontalHit = false;
+
+	int rays = 100;
+
+	ra -= rays/2*RAD;
+	for (int r = 0; r < rays; r++) {
+		ra += RAD;
 		if (ra < 0) {
 			ra += 2 * PI;
 		}
@@ -206,14 +210,14 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 		}
 		
 
-		while (dof < 8) {
+		while (dof < 30) {
 			mx = int(floor(rx / w_tille));
 			my = int(floor(ry / w_tille));
 			mp = my * mapX + mx;
 
 			// hit wall
 			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
-				dof = 8;
+				dof = 30;
 				break;
 			}
 			else {
@@ -255,14 +259,14 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 			yo = -xo * nTan;
 		}
 
-		while (dof < 8) {
+		while (dof < 30) {
 			mx = int(floor(rx / w_tille));
 			my = int(floor(ry / w_tille));
 			mp = my * mapX + mx;
 
 			// hit wall
 			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
-				dof = 8;
+				dof = 30;
 				break;
 			}
 			else {
@@ -275,15 +279,20 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 		vy = ry, vx = rx;
 		vd = distance(px, py, vx, vy, ra, pa);
 
+		//std::cout << vd << " " << hd << std::endl;
+
 		if (hd>vd){
 			rx = vx;
 			ry = vy;
+			fd = vd;
 		}
 		else if (hd<vd) {
 			rx = hx;
 			ry = hy;
+			fd = hd;
+			horizontalHit = true;
 		}
-		
+
 		if (rx >= 0 && rx <= 800) {
 			if (ry >= 0 && ry <= 800) {
 				mx = int(floor(rx / w_tille));
@@ -306,6 +315,35 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 			}
 		}
 
+		// Draw 3D Walls
+		double wh = (w_tille * HEIGHT) / fd;
+		if (wh > 800) {
+			wh = 800;
+		}
+
+		double lineO = HEIGHT - wh / 2;
+		
+		SDL_Rect rect = {r* (800 / rays) + WIDTH, lineO/2, 800/rays, wh};
+		if (mp > 0 && mp < mapX * mapY) {
+			if (map[mp] == 1) {
+				if (horizontalHit) {
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+				}
+				else {
+					SDL_SetRenderDrawColor(renderer, 0, 0, 130, 255);
+				}
+			}
+			else if (map[mp] == 2) {
+				if (horizontalHit) {
+					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+				}
+				else {
+					SDL_SetRenderDrawColor(renderer, 0, 130, 0, 255);
+				}
+			}
+			SDL_RenderFillRect(renderer, &rect);
+		}
+
 		// looking left
 		/*if (ra > PI2 && ra < PI3) {
 			rx = floor(px / w_tille) * w_tille + w_tille;
@@ -313,7 +351,7 @@ void raycasting(int mapX, int mapY, int mapS, int* map, double xPos, double yPos
 			ry = (dx)*Tan + py;
 			xo = -w_tille;
 			yo = -xo * Tan;
-		}*/
+		}*
 
 		//// looking right
 		//if (ra < PI2 || ra > PI3) {
