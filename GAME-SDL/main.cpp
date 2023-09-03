@@ -14,6 +14,8 @@
 
 #define RAD 0.0174532925 // One degree in radiants
 
+
+// game Class
 class Game {
 public:
 	int mapX = 16, mapY = 16, mapSize = 256;
@@ -60,7 +62,7 @@ public:
 		tilleWidth = WIDTH / mapX; // Gets the width of a tille
 	}
 
-
+	// Draws the minimap
 	void DrawMap() {
 		int x, y;
 
@@ -94,8 +96,8 @@ public:
 
 	}
 
-	void HandleFps() {
 	// Limiting the FPS
+	void HandleFps() {
 		lastFrame = SDL_GetTicks();
 		if (lastFrame >= (lastFrame + 1000)) {
 			static int lastTime = lastFrame;
@@ -110,13 +112,14 @@ public:
 		}
 	}
 	
+	// Gets the distance of a ray
 	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle) {
 		double distance = 0;
 
-		double x = rayX - playerX;
-		double y = rayY - playerY;
+		double xDifference = rayX - playerX;
+		double yDifference = rayY - playerY;
 
-		distance = x * cos(playerAngle) + y * sin(playerAngle);
+		distance = xDifference * cos(playerAngle) + yDifference * sin(playerAngle);
 
 		return distance;
 	}
@@ -124,33 +127,35 @@ public:
 	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame) {
 		double rayY = -1, rayX = -1;
 
-		double hy = 0, hx = 0;
-		double vy = 0, vx = 0;
-		double hd = 0, vd = 0;
+		double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
+		double verticalY = 0, verticalX = 0; // x, y possitions of vertical rays
+		double horizontalDistance = 0, verticalDistance = 0; // distances of final rays
 
-		double fd = 0;
+		double finalDistance = 0; // Final distance
 
-		double xo = 0, yo = 0;
+		double xOffset = 0, yOffset = 0;
 
 		double playerX = xPos + 16;
 		double playerY = yPos + 16;
 
-		double dx = 0, dy = 0;
+		double dx = 0, dy = 0; // x, y possitions in a tille
 
-		int mx, my, mp;
+		int mx, my, mp; // possition on a map
 
-		int dof;
+		int dof; // depth of field
 
 		double rayAngle = playerAngle;
 
-		int rays = 100;
+		int rays = 100; // number of rays
 
 		rayAngle -= rays / 2 * RAD;
 
 
+		//Drawing floor
 		SDL_SetRenderDrawColor(renderer, 200, 20, 20, 255);
 		SDL_Rect rect = { WIDTH, 800, WIDTH, -HEIGHT / 2 };
 		SDL_RenderFillRect(renderer, &rect);
+
 
 		for (int r = 0; r < rays; r++) {
 			bool horizontalHit;
@@ -160,7 +165,7 @@ public:
 			if (rayAngle > 2 * PI) {
 				rayAngle -= 2 * PI;
 			}
-			// Check horizontal lines
+			/* --- Check horizontal lines--- */
 			dof = 0;
 			double aTan = -1 / tan(rayAngle);
 
@@ -175,8 +180,8 @@ public:
 				rayY = floor(playerY / tilleWidth) * tilleWidth - 1;
 				dy = playerY - rayY;
 				rayX = (dy)*aTan + playerX;
-				yo = -tilleWidth;
-				xo = -yo * aTan;
+				yOffset = -tilleWidth;
+				xOffset = -yOffset * aTan;
 			}
 
 			// looking down
@@ -184,8 +189,8 @@ public:
 				rayY = floor(playerY / tilleWidth) * tilleWidth + tilleWidth;
 				dy = playerY - rayY;
 				rayX = (dy)*aTan + playerX;
-				yo = tilleWidth;
-				xo = -yo * aTan;
+				yOffset = tilleWidth;
+				xOffset = -yOffset * aTan;
 			}
 
 
@@ -201,15 +206,15 @@ public:
 				}
 				else {
 					dof++;
-					rayX += xo;
-					rayY += yo;
+					rayX += xOffset;
+					rayY += yOffset;
 				}
 			}
 
-			hy = rayY, hx = rayX;
-			hd = distance(playerX, playerY, hx, hy, rayAngle, playerAngle);
+			horizontalY = rayY, horizontalX = rayX;
+			horizontalDistance = distance(playerX, playerY, horizontalX, horizontalY, rayAngle, playerAngle);
 
-			// Check vertical lines
+			/* --- Check vertical lines--- */
 
 			dof = 0;
 			double nTan = -tan(rayAngle);
@@ -225,8 +230,8 @@ public:
 				rayX = floor(playerX / tilleWidth) * tilleWidth + tilleWidth;
 				dx = playerX - rayX;
 				rayY = (dx)*nTan + playerY;
-				xo = tilleWidth;
-				yo = -xo * nTan;
+				xOffset = tilleWidth;
+				yOffset = -xOffset * nTan;
 			}
 
 			// looking left
@@ -234,8 +239,8 @@ public:
 				rayX = floor(playerX / tilleWidth) * tilleWidth - 1;
 				dx = playerX - rayX;
 				rayY = (dx)*nTan + playerY;
-				xo = -tilleWidth;
-				yo = -xo * nTan;
+				xOffset = -tilleWidth;
+				yOffset = -xOffset * nTan;
 			}
 
 			while (dof < 30) {
@@ -250,45 +255,46 @@ public:
 				}
 				else {
 					dof++;
-					rayX += xo;
-					rayY += yo;
+					rayX += xOffset;
+					rayY += yOffset;
 				}
 			}
 
-			vy = rayY, vx = rayX;
-			vd = distance(playerX, playerY, vx, vy, rayAngle, playerAngle);
+			verticalY = rayY, verticalX = rayX;
+			verticalDistance = distance(playerX, playerY, verticalX, verticalY, rayAngle, playerAngle);
 
-			if (hd > vd) {
-				rayX = vx;
-				rayY = vy;
-				fd = vd;
+			// Get shorter distance
+			if (horizontalDistance > verticalDistance) {
+				rayX = verticalX;
+				rayY = verticalY;
+				finalDistance = verticalDistance;
 				horizontalHit = false;
 			}
-			else if (hd < vd) {
-				rayX = hx;
-				rayY = hy;
-				fd = hd;
+			else if (horizontalDistance < verticalDistance) {
+				rayX = horizontalX;
+				rayY = horizontalY;
+				finalDistance = horizontalDistance;
 				horizontalHit = true;
 			}
 			else {
 				// Both distances are the same; handle corner/edge case
-				// You can choose which wall to render based on ray direction
 				if (rayAngle >= 0 && rayAngle < PI) {
 					// Ray is facing down, prefer vertical hit
-					rayX = hx;
-					rayY = hy;
-					fd = hd;
+					rayX = horizontalX;
+					rayY = horizontalY;
+					finalDistance = horizontalDistance;
 					horizontalHit = true;
 				}
 				else {
 					// Ray is facing up, prefer horizontal hit
-					rayX = vx;
-					rayY = vy;
-					fd = vd;
+					rayX = verticalX;
+					rayY = verticalY;
+					finalDistance = verticalDistance;
 					horizontalHit = false;
 				}
 			}
 
+			//draws the rays on the minimap
 			if (rayX >= 0 && rayX <= 800) {
 				if (rayY >= 0 && rayY <= 800) {
 					mx = int(floor(rayX / tilleWidth));
@@ -310,7 +316,7 @@ public:
 					}
 
 					// Draw 3D Walls
-					double wh = (tilleWidth * HEIGHT) / fd;
+					double wh = (tilleWidth * HEIGHT) / finalDistance;
 					if (wh > 1000) {
 						wh = 1000;
 					}
@@ -346,27 +352,26 @@ public:
 	}
 };
 
-
+// Player class
 class Player {
 public:
+	// Variables to store the player's position
 	double xPos = 100;
 	double yPos = 100;
 	double playerAngle;
 
-	SDL_Rect player_rect = { 100,100,25,25 };
-	int player_speed = 6;
+	int playerSpeed = 6;
 
-	const int PLAYER_WIDTH = 8;   // Width of each frame in the texture
-	const int PLAYER_HEIGHT = 8;  // Height of each frame in the texture
-	const int PLAYER_FRAME_COUNT = 32; // Total number of frames in the texture
-	const int FRAMES_PER_ROW = 32; // Number of frames per row in the texture
+	const int playerWidth = 8;   // Width of each frame in the texture
+	const int playerHeight = 8;  // Height of each frame in the texture
+	const int playerFrameCount = 32; // Total number of frames in the texture
+	const int framesPerRow = 32; // Number of frames per row in the texture
 
-	const double ANGLE_PER_FRAME = static_cast<double>(360) / FRAMES_PER_ROW;
-	const double RAD_PER_FRAME = PI * ANGLE_PER_FRAME / 180;
+	const double anglePerFrame = static_cast<double>(360) / framesPerRow; // Number of degreses for each frame
+	const double radPerFrame = PI * anglePerFrame / 180; // Number of radiants for each frame
 
 	int currentFrame = 0;
 
-	// Variables to store the player's position
 	double pdx = cos(playerAngle) * 3;
 	double pdy = sin(playerAngle) * 3;
 
@@ -379,6 +384,7 @@ public:
 		SDL_FreeSurface(playerSurface);
 	}
 
+	// Handles inputs
 	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map) {
 		if (currentFrame >= 32) {
 			currentFrame = 0;
@@ -399,7 +405,7 @@ public:
 
 		if (state[SDL_SCANCODE_A]) {
 			currentFrame += 1;
-			playerAngle -= RAD_PER_FRAME / 2;
+			playerAngle -= radPerFrame / 2;
 			if (playerAngle < 0) {
 				playerAngle += 2 * PI;
 			}
@@ -409,7 +415,7 @@ public:
 
 		if (state[SDL_SCANCODE_D]) {
 			currentFrame -= 1;
-			playerAngle += RAD_PER_FRAME / 2;
+			playerAngle += radPerFrame / 2;
 			if (playerAngle > 2 * PI) {
 				playerAngle -= 2 * PI;
 			}
@@ -439,12 +445,12 @@ public:
 	void Draw(SDL_Renderer* renderer) {
 
 		// Calculate the source rectangle based on the current frame
-		int srcX = round(currentFrame * PLAYER_WIDTH);
+		int srcX = round(currentFrame * playerWidth);
 		int srcY = 0; // Since all frames are on a single row, y is always 0
 
 		// Set up the source and destination rectangles
-		SDL_Rect srcRect = { srcX, srcY, PLAYER_WIDTH, PLAYER_HEIGHT };
-		SDL_Rect destRect = { xPos, yPos, PLAYER_WIDTH * 4, PLAYER_HEIGHT * 4 };
+		SDL_Rect srcRect = { srcX, srcY, playerWidth, playerHeight };
+		SDL_Rect destRect = { xPos, yPos, playerWidth * 4, playerHeight * 4 };
 
 		// Render the player's current frame
 		SDL_RenderCopy(renderer, playerTexture, &srcRect, &destRect);
@@ -462,6 +468,7 @@ int main(int argc, char** argv){
 	player.Update(game.renderer);
 
 
+	// Main loop
 	while (game.isRunning) {
 		game.HandleFps();
 
@@ -471,11 +478,11 @@ int main(int argc, char** argv){
 
 		game.DrawMap(); // Draws the map
 
-		player.Draw(game.renderer);
+		player.Draw(game.renderer); // Draws the player
 
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame);
 
-		SDL_SetRenderDrawColor(game.renderer, 200, 200, 200, 255);
+		SDL_SetRenderDrawColor(game.renderer, 200, 200, 200, 255); // Draws the background
 
 		SDL_RenderPresent(game.renderer);
 	}
