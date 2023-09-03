@@ -1,5 +1,8 @@
 #pragma once
 
+#include <SDL.h>
+#include <SDL_image.h>
+
 // game Class
 class Game {
 public:
@@ -35,7 +38,8 @@ public:
 	int timerFPS;
 
 	void MakeWindow(const char* name);
+	void DrawMap();
 	void HandleFps();
-	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle) { return distance; };
+	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle);
 	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame);
 };

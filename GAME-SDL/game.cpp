@@ -1,7 +1,20 @@
 #include "game.h"
 
+#include <SDL.h>
+#include <SDL_image.h>
+
+#define WIDTH 800
+#define HEIGHT 800
+
+#define PI 3.1415926535
+
+#define PI2 PI/2
+#define PI3 3*PI/2
+
+#define RAD 0.0174532925 // One degree in radiants
+
 // game Class
-Game::MakeWindow(const char* name) {
+void Game::MakeWindow(const char* name) {
 	isRunning = true;
 
 	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,WIDTH * 2, HEIGHT, 0);
@@ -15,7 +28,7 @@ Game::MakeWindow(const char* name) {
 }
 
 // Draws the minimap
-Game::DrawMap() {
+void Game::DrawMap() {
 	int x, y;
 
 	// Draw the map tiles
@@ -49,7 +62,7 @@ Game::DrawMap() {
 }
 
 // Limiting the FPS
-Game::HandleFps() {
+void Game::HandleFps() {
 	lastFrame = SDL_GetTicks();
 	if (lastFrame >= (lastFrame + 1000)) {
 		static int lastTime = lastFrame;
@@ -65,7 +78,7 @@ Game::HandleFps() {
 }
 
 // Gets the distance of a ray
-Game::distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle) {
+double Game::distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle) {
 	double distance = 0;
 
 	double xDifference = rayX - playerX;
@@ -76,7 +89,7 @@ Game::distance(double playerX, double playerY, double rayX, double rayY, double 
 	return distance;
 }
 
-Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame) {
+void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame) {
 	double rayY = -1, rayX = -1;
 
 	double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
