@@ -22,15 +22,15 @@ int main(int argc, char** argv){
 	while (game.isRunning) {
 		game.HandleFps();
 
-		player.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map); // Movement, QUIT
+		player.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map, player.playerSpeed); // Movement, QUIT
 
 		SDL_RenderClear(game.renderer);
 
 		game.DrawMap(); // Draws the map
 
-		player.Draw(game.renderer); // Draws the player
-
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame);
+
+		player.Draw(game.renderer); // Draws the player
 
 		SDL_SetRenderDrawColor(game.renderer, 200, 200, 200, 255); // Draws the background
 

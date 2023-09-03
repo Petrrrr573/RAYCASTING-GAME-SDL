@@ -9,7 +9,7 @@ void Player::Update(SDL_Renderer* renderer) {
 	SDL_FreeSurface(playerSurface);
 }
 
-void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map) {
+void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map, int playerSpeed) {
 	if (currentFrame >= 32) {
 		currentFrame = 0;
 	}
@@ -29,22 +29,22 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 
 	if (state[SDL_SCANCODE_A]) {
 		currentFrame += 1;
-		playerAngle -= radPerFrame / 2;
+		playerAngle -= radPerFrame;
 		if (playerAngle < 0) {
 			playerAngle += 2 * PI;
 		}
-		pdx = cos(playerAngle) * 3;
-		pdy = sin(playerAngle) * 3;
+		pdx = cos(playerAngle) * playerSpeed;
+		pdy = sin(playerAngle) * playerSpeed;
 	}
 
 	if (state[SDL_SCANCODE_D]) {
 		currentFrame -= 1;
-		playerAngle += radPerFrame / 2;
+		playerAngle += radPerFrame;
 		if (playerAngle > 2 * PI) {
 			playerAngle -= 2 * PI;
 		}
-		pdx = cos(playerAngle) * 3;
-		pdy = sin(playerAngle) * 3;
+		pdx = cos(playerAngle) * playerSpeed;
+		pdy = sin(playerAngle) * playerSpeed;
 	}
 
 	if (state[SDL_SCANCODE_W]) {

@@ -9,7 +9,7 @@ public:
 	double yPos = 100;
 	double playerAngle;
 
-	int playerSpeed = 6;
+	int playerSpeed = 3;
 
 	const int playerWidth = 8;   // Width of each frame in the texture
 	const int playerHeight = 8;  // Height of each frame in the texture
@@ -21,8 +21,8 @@ public:
 
 	int currentFrame = 0;
 
-	double pdx = cos(playerAngle) * 3;
-	double pdy = sin(playerAngle) * 3;
+	double pdx = cos(playerAngle) * playerSpeed;
+	double pdy = sin(playerAngle) * playerSpeed;
 
 	SDL_Surface* playerSurface;
 	SDL_Texture* playerTexture;
@@ -30,6 +30,6 @@ public:
 
 	void Update(SDL_Renderer* renderer);
 	// Handles inputs
-	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map);
+	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map, int playerSpeed);
 	void Draw(SDL_Renderer* renderer);
 };
