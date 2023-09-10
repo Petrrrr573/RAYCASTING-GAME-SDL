@@ -75,7 +75,10 @@ double Game::distance(double playerX, double playerY, double rayX, double rayY, 
 	double xDifference = rayX - playerX;
 	double yDifference = rayY - playerY;
 
-	distance = xDifference * cos(playerAngle) + yDifference * sin(playerAngle);
+	//distance = xDifference * cos(playerAngle) + yDifference * sin(playerAngle);
+	distance = sqrt(xDifference*xDifference + yDifference*yDifference);
+
+	distance = distance * cos(rayAngle - playerAngle);
 
 	return distance;
 }
@@ -102,13 +105,17 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	double rayAngle = playerAngle;
 
-	int rays = 100; // number of rays
+	int FOV = 60;
 
-	rayAngle -= rays / 2 * RAD;
+	int rays = 800; // number of rays
+
+	rayAngle -= FOV*PI/180/2;
+
+	int playerPlaneDistance = 400 / tan(0.523599); // midle of the screen / tan(30deg)
 
 
 	//Drawing floor
-	SDL_SetRenderDrawColor(renderer, 200, 20, 20, 255);
+	SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
 	SDL_Rect rect = { WIDTH, 800, WIDTH, -HEIGHT / 2 };
 	SDL_RenderFillRect(renderer, &rect);
 
@@ -232,23 +239,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			finalDistance = horizontalDistance;
 			horizontalHit = true;
 		}
-		else {
-			// Both distances are the same; handle corner/edge case
-			if (rayAngle >= 0 && rayAngle < PI) {
-				// Ray is facing down, prefer vertical hit
-				rayX = horizontalX;
-				rayY = horizontalY;
-				finalDistance = horizontalDistance;
-				horizontalHit = true;
-			}
-			else {
-				// Ray is facing up, prefer horizontal hit
-				rayX = verticalX;
-				rayY = verticalY;
-				finalDistance = verticalDistance;
-				horizontalHit = false;
-			}
-		}
 
 		//draws the rays on the minimap
 		if (rayX >= 0 && rayX <= 800) {
@@ -272,7 +262,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				// Draw 3D Walls
-				double wh = (tilleWidth * HEIGHT) / finalDistance;
+				//double wh = (tilleWidth * HEIGHT) / finalDistance;
+				double wh = tilleWidth/finalDistance*playerPlaneDistance;
 				if (wh > 1000) {
 					wh = 1000;
 				}
@@ -299,10 +290,11 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						}
 					}
 					SDL_RenderFillRect(renderer, &rect);
+					//SDL_RenderDrawLine(renderer, r* (800 / rays) + WIDTH, lineO / 2, r* (800 / rays) + WIDTH, wh+lineO / 2);
 				}
 			}
 		}
 
-		rayAngle += RAD;
+		rayAngle += FOV*PI/180/rays;
 	}
 }
