@@ -1,4 +1,5 @@
 #pragma once
+#include "main.h"
 
 // game Class
 class Game {
@@ -8,24 +9,24 @@ public:
 	int map[256] = {
 		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,1,1,1,2,1,0,0,0,0,0,0,1,
 		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,1,0,0,0,0,1,2,0,0,1,
-		1,0,0,0,0,0,1,0,0,0,0,2,1,0,0,1,
-		1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,1,1,0,1,1,0,0,0,0,0,1,
-		1,0,0,0,0,1,1,2,2,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,0,1,0,0,0,0,2,0,0,1,
-		1,0,0,1,0,0,0,1,0,0,2,2,2,0,0,1,
-		1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,
-		1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	};
 
 	bool isRunning;
-	int tilleWidth;
+	int tilleWidth = WIDTH / mapX; // Gets the width of a tille
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -34,9 +35,10 @@ public:
 
 	int timerFPS;
 
-	void MakeWindow(const char* name);
+	void MakeWindow(const char* name, int width, int height, bool& running);
 	void DrawMap();
 	void HandleFps();
+	void Input(bool&running);
 	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle);
 	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame);
 };

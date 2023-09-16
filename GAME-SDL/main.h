@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <iostream>
 
 #define WIDTH 800
 #define HEIGHT 800

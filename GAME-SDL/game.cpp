@@ -2,38 +2,31 @@
 #include <SDL_image.h>
 
 #include "game.h"
-#include "main.h"
 
 // game Class
-void Game::MakeWindow(const char* name) {
-	isRunning = true;
+void Game::MakeWindow(const char* name, int width, int height, bool& running) {
+	running = true;
 
-	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,WIDTH * 2, HEIGHT, 0);
+	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, 0);
 
 	renderer = SDL_CreateRenderer(window, -1, 0);
-
-
-	SDL_GetRendererOutputSize(renderer, &mapSize, &mapSize); // Gets the width of thescreen
-
-	tilleWidth = WIDTH / mapX; // Gets the width of a tille
 }
 
 // Draws the minimap
 void Game::DrawMap() {
 	int x, y;
-
 	// Draw the map tiles
 	for (y = 0; y < mapY; y++) {
 		for (x = 0; x < mapX; x++) {
 			if (map[y * mapX + x] == 1) {
 				SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
-				SDL_Rect rect = { x * (mapSize / mapX) + 1, y * (mapSize / mapY) + 1,mapSize / mapX - 1, mapSize / mapY - 1 };
+				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
 
 			if (map[y * mapX + x] == 2) {
 				SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
-				SDL_Rect rect = { x * (mapSize / mapX) + 1, y * (mapSize / mapY) + 1,mapSize / mapX - 1, mapSize / mapY - 1 };
+				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
 		}
@@ -42,12 +35,12 @@ void Game::DrawMap() {
 	// Draw the horizontal grid lines
 	for (y = 0; y < mapY; y++) {
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		SDL_RenderDrawLine(renderer, 0, y * (mapSize / mapY), mapSize, y * (mapSize /mapY));
+		SDL_RenderDrawLine(renderer, 0, y * tilleWidth, HEIGHT, y * tilleWidth);
 	}
 
 	// Draw the vertical grid lines
 	for (x = 0; x < mapX; x++) {
-		SDL_RenderDrawLine(renderer, x * (mapSize / mapX), 0, x * (mapSize / mapX),mapSize);
+		SDL_RenderDrawLine(renderer, x * tilleWidth, 0, x * tilleWidth, WIDTH);
 	}
 
 }
@@ -65,6 +58,23 @@ void Game::HandleFps() {
 	timerFPS = SDL_GetTicks() - lastFrame;
 	if (timerFPS < (1000 / 60)) {
 		SDL_Delay((1000 / 60) - timerFPS);
+	}
+}
+
+
+void Game::Input(bool& running) {
+
+	SDL_Event event;
+
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+
+	SDL_PollEvent(&event);
+
+	if (state[SDL_SCANCODE_ESCAPE]) {
+		running = false;
+	}
+	if (event.type == SDL_QUIT) {
+		running = false;
 	}
 }
 
