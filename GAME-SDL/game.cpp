@@ -140,7 +140,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 		// looking up
 		if (rayAngle > PI) {
-			rayY = floor(playerY / tilleWidth) * tilleWidth - 1;
+			rayY = floor(playerY / tilleWidth) * tilleWidth;
 			dy = playerY - rayY;
 			rayX = (dy)*aTan + playerX;
 			yOffset = -tilleWidth;
@@ -158,8 +158,13 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 
 		while (dof < 30) {
+			if (rayAngle > PI) {
+				my = int(floor((rayY-1) / tilleWidth));
+			}
+			else {
+				my = int(floor(rayY / tilleWidth));
+			}
 			mx = int(floor(rayX / tilleWidth));
-			my = int(floor(rayY / tilleWidth));
 			mp = my * mapX + mx;
 
 			// hit wall
@@ -199,7 +204,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 		// looking left
 		if (rayAngle > PI2 && rayAngle < PI3) {
-			rayX = floor(playerX / tilleWidth) * tilleWidth - 1;
+			rayX = floor(playerX / tilleWidth) * tilleWidth;
 			dx = playerX - rayX;
 			rayY = (dx)*nTan + playerY;
 			xOffset = -tilleWidth;
@@ -207,7 +212,12 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		}
 
 		while (dof < 30) {
-			mx = int(floor(rayX / tilleWidth));
+			if (rayAngle > PI2 && rayAngle < PI3) {
+				mx = int(floor((rayX-1) / tilleWidth));
+			}
+			else {
+				mx = int(floor(rayX / tilleWidth));
+			}
 			my = int(floor(rayY / tilleWidth));
 			mp = my * mapX + mx;
 
@@ -243,8 +253,24 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		//draws the rays on the minimap
 		if (rayX >= 0 && rayX <= 800) {
 			if (rayY >= 0 && rayY <= 800) {
-				mx = int(floor(rayX / tilleWidth));
-				my = int(floor(rayY / tilleWidth));
+				if (horizontalHit == true) {
+					if (rayAngle > PI) {
+						my = int(floor((rayY - 1) / tilleWidth));
+					}
+					else {
+						my = int(floor(rayY / tilleWidth));
+					}
+					mx = int(floor(rayX / tilleWidth));
+				}
+				else {
+					if (rayAngle > PI2 && rayAngle < PI3) {
+						mx = int(floor((rayX - 1) / tilleWidth));
+					}
+					else {
+						mx = int(floor(rayX / tilleWidth));
+					}
+					my = int(floor(rayY / tilleWidth));
+				}
 				mp = my * mapX + mx;
 
 				// hit wall
