@@ -26,13 +26,13 @@ void Game::DrawMap() {
 	for (y = 0; y < mapY; y++) {
 		for (x = 0; x < mapX; x++) {
 			if (map[y * mapX + x] == 1) {
-				SDL_SetRenderDrawColor(renderer, 35, 35, 35, 255);
+				SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
 				SDL_Rect rect = { x * (mapSize / mapX) + 1, y * (mapSize / mapY) + 1,mapSize / mapX - 1, mapSize / mapY - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
 
 			if (map[y * mapX + x] == 2) {
-				SDL_SetRenderDrawColor(renderer, 0, 150, 0, 255);
+				SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
 				SDL_Rect rect = { x * (mapSize / mapX) + 1, y * (mapSize / mapY) + 1,mapSize / mapX - 1, mapSize / mapY - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
@@ -115,7 +115,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 
 	//Drawing floor
-	SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+	SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
 	SDL_Rect rect = { WIDTH, 800, WIDTH, -HEIGHT / 2 };
 	SDL_RenderFillRect(renderer, &rect);
 
@@ -276,13 +276,13 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				// hit wall
 				if (mp > 0 && mp < mapX * mapY) {
 					if (map[mp] == 1) {
-						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+						SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
 					}
 					else if (map[mp] == 2) {
-						SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+						SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
 					}
 					else {
-						SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
 					SDL_RenderDrawLine(renderer, playerX, playerY, rayX, rayY);
 				}
@@ -300,19 +300,19 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				if (mp > 0 && mp < mapX * mapY) {
 					if (map[mp] == 1) {
 						if (horizontalHit == true) {
-							SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+							SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
 						}
 						else if (horizontalHit == false) {
-							SDL_SetRenderDrawColor(renderer, 0, 0, 130, 255);
+							SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
 						}
 						else { continue; }
 					}
 					else if (map[mp] == 2) {
 						if (horizontalHit == true) {
-							SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+							SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
 						}
 						else if (horizontalHit == false) {
-							SDL_SetRenderDrawColor(renderer, 0, 130, 0, 255);
+							SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
 						}
 					}
 					SDL_RenderFillRect(renderer, &rect);

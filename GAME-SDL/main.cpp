@@ -32,7 +32,7 @@ int main(int argc, char** argv){
 
 		player.Draw(game.renderer); // Draws the player
 
-		SDL_SetRenderDrawColor(game.renderer, 200, 200, 200, 255); // Draws the background
+		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 
 		SDL_RenderPresent(game.renderer);
 	}
