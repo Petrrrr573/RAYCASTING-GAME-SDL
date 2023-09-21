@@ -9,7 +9,7 @@ void Player::Update(SDL_Renderer* renderer) {
 	SDL_FreeSurface(playerSurface);
 }
 
-void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map, int playerSpeed) {
+void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map, int playerSpeed) {
 	if (currentFrame >= 32) {
 		currentFrame = 0;
 	}

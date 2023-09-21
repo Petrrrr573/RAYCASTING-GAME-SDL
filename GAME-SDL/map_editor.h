@@ -4,12 +4,11 @@
 
 class MapEditor {
 	public: 
-		Game game;
 		bool isRunning;
 
 		// X, Y mouse possition
 		int mouseX = 0;
 		int mouseY = 0;
 
-		void update(int* map, int& mapX, int& mapY, int& mapSize);
+		void update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth);
 };

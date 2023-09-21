@@ -17,13 +17,14 @@ int main(int argc, char** argv){
 	// EDITOR PART
 	game.MakeWindow("Map Editor", WIDTH+400, HEIGHT, editor.isRunning);
 	while (editor.isRunning) {
+		game.HandleFps();
 		game.Input(editor.isRunning);
 
 		SDL_RenderClear(game.renderer);
 
 		game.DrawMap(); // Draws the map
 
-		editor.update(game.map, game.mapX, game.mapY, game.mapSize);
+		editor.update(game.mapX, game.mapY, game.mapSize, game.map, game.tilleWidth);
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 

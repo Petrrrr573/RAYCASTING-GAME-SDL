@@ -30,6 +30,6 @@ public:
 
 	void Update(SDL_Renderer* renderer);
 	// Handles inputs
-	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, int* map, int playerSpeed);
+	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map, int playerSpeed);
 	void Draw(SDL_Renderer* renderer);
 };

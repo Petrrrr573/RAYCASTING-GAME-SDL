@@ -10,6 +10,11 @@ void Game::MakeWindow(const char* name, int width, int height, bool& running) {
 	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, 0);
 
 	renderer = SDL_CreateRenderer(window, -1, 0);
+
+	for (int i = 0; i < mapSize; i++) {
+		map.push_back(0);
+		std::cout << map[i] << std::endl;
+	}
 }
 
 // Draws the minimap
