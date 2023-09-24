@@ -13,7 +13,6 @@ void Game::MakeWindow(const char* name, int width, int height, bool& running) {
 
 	for (int i = 0; i < mapSize; i++) {
 		map.push_back(0);
-		std::cout << map[i] << std::endl;
 	}
 }
 
@@ -98,7 +97,7 @@ double Game::distance(double playerX, double playerY, double rayX, double rayY, 
 	return distance;
 }
 
-void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame) {
+void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled) {
 	double rayY = -1, rayX = -1;
 
 	double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
@@ -109,8 +108,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	double xOffset = 0, yOffset = 0;
 
-	double playerX = xPos + 16;
-	double playerY = yPos + 16;
+	double playerX = xPos + pWidthScaled/2;
+	double playerY = yPos + pWidthScaled/2;
 
 	double dx = 0, dy = 0; // x, y possitions in a tille
 

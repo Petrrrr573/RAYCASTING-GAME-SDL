@@ -23,5 +23,5 @@ public:
 	void HandleFps();
 	void Input(bool&running);
 	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle);
-	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame);
+	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled);
 };

@@ -3,13 +3,19 @@
 // Player class
 // Handles inputs
 
-void Player::Update(SDL_Renderer* renderer) {
+void Player::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
 	playerSurface = IMG_Load("C:\\Users\\Petr\\Desktop\\player.png");
 	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
+
+	xPos = 2 * tilleWidth;
+	yPos = 2 * tilleWidth;
+
+	scale = 16 * scale/mapX;
+	pWidthScaled = playerWidth * scale;
 }
 
-void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map, int playerSpeed) {
+void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map) {
 	if (currentFrame >= 32) {
 		currentFrame = 0;
 	}
@@ -48,19 +54,19 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 	}
 
 	if (state[SDL_SCANCODE_W]) {
-		if (map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos + 32) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + 32) / tilleWidth)) * mapX + int(floor((xPos +32) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + 32) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
+		if (map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
 			yPos += pdy;
 		}
-		if (map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos + pdx) / tilleWidth))] == 0 && map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos + pdx + 32) / tilleWidth))] == 0 && map[int((floor(yPos + 32) / tilleWidth)) * mapX + int(floor((xPos + pdx +32) / tilleWidth))] == 0 && map[int((floor(yPos + 32) / tilleWidth)) * mapX + int(floor((xPos + pdx) / tilleWidth))] == 0) {
+		if (map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos + pdx) / tilleWidth))] == 0 && map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos + pdx + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pdx + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pdx) / tilleWidth))] == 0) {
 			xPos += pdx;
 		}
 	}
 
 	if (state[SDL_SCANCODE_S]) {
-		if (map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos + 32) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + 32) / tilleWidth)) * mapX + int(floor((xPos +32) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + 32) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
+		if (map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
 			yPos -= pdy;
 		}
-		if (map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos - pdx) / tilleWidth))] == 0 && map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos - pdx + 32) / tilleWidth))] == 0 && map[int((floor(yPos + 32) / tilleWidth)) * mapX + int(floor((xPos - pdx +32) / tilleWidth))] == 0 && map[int((floor(yPos + 32) / tilleWidth)) * mapX + int(floor((xPos - pdx) / tilleWidth))] == 0) {
+		if (map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos - pdx) / tilleWidth))] == 0 && map[int((floor(yPos) / tilleWidth)) * mapX + int(floor((xPos - pdx + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos - pdx + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos - pdx) / tilleWidth))] == 0) {
 			xPos -= pdx;
 		}
 	}
@@ -74,7 +80,7 @@ void Player::Draw(SDL_Renderer* renderer) {
 
 	// Set up the source and destination rectangles
 	SDL_Rect srcRect = { srcX, srcY, playerWidth, playerHeight };
-	SDL_Rect destRect = { xPos, yPos, playerWidth * 4, playerHeight * 4 };
+	SDL_Rect destRect = { xPos, yPos, playerWidth * scale, playerHeight * scale };
 
 	// Render the player's current frame
 	SDL_RenderCopy(renderer, playerTexture, &srcRect, &destRect);

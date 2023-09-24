@@ -19,6 +19,9 @@ public:
 	const double anglePerFrame = static_cast<double>(360) / framesPerRow; // Number of degreses for each frame
 	const double radPerFrame = PI * anglePerFrame / 180; // Number of radiants for each frame
 
+	float scale = 4;
+	int pWidthScaled;
+
 	int currentFrame = 0;
 
 	double pdx = cos(playerAngle) * playerSpeed;
@@ -28,8 +31,8 @@ public:
 	SDL_Texture* playerTexture;
 
 
-	void Update(SDL_Renderer* renderer);
+	void Update(SDL_Renderer* renderer, int tilleWidth, int mapX);
 	// Handles inputs
-	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map, int playerSpeed);
+	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map);
 	void Draw(SDL_Renderer* renderer);
 };
