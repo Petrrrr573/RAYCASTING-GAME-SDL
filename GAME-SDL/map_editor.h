@@ -11,4 +11,6 @@ class MapEditor {
 		int mouseY = 0;
 
 		void update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth);
+		void saveMap(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth, const std::string& filename);
+		void openMap(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth, const std::string& filename);
 };

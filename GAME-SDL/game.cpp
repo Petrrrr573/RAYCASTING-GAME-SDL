@@ -308,7 +308,20 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					wh = 1000;
 				}
 
-				double lineO = HEIGHT - wh / 1.5;
+				lineO = HEIGHT - wh / 1.5;
+
+				SDL_Event event;
+
+				const Uint8* state = SDL_GetKeyboardState(NULL);
+
+				SDL_PollEvent(&event);
+
+				if (state[SDL_SCANCODE_F]) {
+					lineO += 200;
+				}
+				if (state[SDL_SCANCODE_V]) {
+					lineO -= 200;
+				}
 
 				SDL_Rect rect = { r * (800 / rays) + WIDTH, lineO / 2, 800 / rays, wh };
 				if (mp > 0 && mp < mapX * mapY) {
@@ -319,7 +332,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						else if (horizontalHit == false) {
 							SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
 						}
-						else { continue; }
 					}
 					else if (map[mp] == 2) {
 						if (horizontalHit == true) {
@@ -328,6 +340,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						else if (horizontalHit == false) {
 							SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
 						}
+					}
+					else if (map[mp] == 3) {
+						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
 					SDL_RenderFillRect(renderer, &rect);
 					//SDL_RenderDrawLine(renderer, r* (800 / rays) + WIDTH, lineO / 2, r* (800 / rays) + WIDTH, wh+lineO / 2);

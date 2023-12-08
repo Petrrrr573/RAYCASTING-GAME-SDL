@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 #define WIDTH 800
 #define HEIGHT 800
@@ -24,4 +25,4 @@
 #define WALL_COLOR_2 0, 60, 60, 255
 #define WALL_COLOR_2_2 0, 100, 100, 255
 
-#define WALL_COLOR_3 255, 0, 0, 255
+#define WALL_COLOR_3 40, 40, 40, 255

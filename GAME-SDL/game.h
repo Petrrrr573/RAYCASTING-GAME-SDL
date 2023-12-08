@@ -18,6 +18,8 @@ public:
 
 	int timerFPS;
 
+	double lineO;
+
 	void MakeWindow(const char* name, int width, int height, bool& running);
 	void DrawMap();
 	void HandleFps();
