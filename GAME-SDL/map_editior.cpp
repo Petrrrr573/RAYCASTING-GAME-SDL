@@ -60,6 +60,12 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
                 mapSize = mapX * mapY;
                 tilleWidth = WIDTH / mapX;
             }
+            if (state[SDL_SCANCODE_C]) {
+                map.clear();
+                for (int i = 0; i < mapSize; i++) {
+                    map.push_back(0);
+                }
+            }
         }
     }
 }
