@@ -28,45 +28,48 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
             if (state[SDL_SCANCODE_D]) {
                 map[mouseGridY * mapX + mouseGridX] = 0;
             }
-
+            // Makes the map bigger
             if (state[SDL_SCANCODE_I]) {
                 mapX++;
                 mapY++;
                 mapSize = mapX * mapY;
                 tilleWidth = WIDTH / mapX;
-                map.clear();
-                for (int i = 0; i < mapSize; i++) {
-                    map.push_back(0);
-                }
+                clearMap(map, mapSize);
             }
+            // Makes the map smaller
             if (state[SDL_SCANCODE_O]) {
                 mapX--;
                 mapY--;
                 mapSize = mapX * mapY;
                 tilleWidth = WIDTH / mapX;
-                map.clear();
-                for (int i = 0; i < mapSize; i++) {
-                    map.push_back(0);
-                }
+                clearMap(map, mapSize);
             }
 
+            // Saves the map
             if (state[SDL_SCANCODE_M]) {
                 saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
                 mapSize = mapX * mapY;
                 tilleWidth = WIDTH / mapX;
             }
+            // Loads the saved map
             if (state[SDL_SCANCODE_N]) {
                 openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
                 mapSize = mapX * mapY;
                 tilleWidth = WIDTH / mapX;
             }
+
+            // Clears the map
             if (state[SDL_SCANCODE_C]) {
-                map.clear();
-                for (int i = 0; i < mapSize; i++) {
-                    map.push_back(0);
-                }
+                clearMap(map, mapSize);
             }
         }
+    }
+}
+
+void MapEditor::clearMap(std::vector<int>& map, int& mapSize) {
+    map.clear();
+    for (int i = 0; i < mapSize; i++) {
+        map.push_back(0);
     }
 }
 
