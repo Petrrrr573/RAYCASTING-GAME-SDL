@@ -128,10 +128,10 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	int playerPlaneDistance = 400 / tan(0.523599); // midle of the screen / tan(30deg)
 
 
-	//Drawing floor
-	SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
-	SDL_Rect rect = { WIDTH, 800, WIDTH, -HEIGHT / 2 };
-	SDL_RenderFillRect(renderer, &rect);
+	////Drawing floor
+	//SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
+	//SDL_Rect rect = { WIDTH, 800, WIDTH, -HEIGHT / 2 };
+	//SDL_RenderFillRect(renderer, &rect);
 
 
 	for (int r = 0; r < rays; r++) {
@@ -324,6 +324,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				SDL_Rect rect = { r * (800 / rays) + WIDTH, lineO / 2, 800 / rays, wh };
+				SDL_Rect floorRect = { r * (800 / rays) + WIDTH, lineO / 2 + wh - 1, 800 / rays, 800 - lineO / 2 + wh + 1};
 				if (mp > 0 && mp < mapX * mapY) {
 					if (map[mp] == 1) {
 						if (horizontalHit == true) {
@@ -344,7 +345,10 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					else if (map[mp] == 3) {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
+					//Drawing floor
 					SDL_RenderFillRect(renderer, &rect);
+					SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
+					SDL_RenderFillRect(renderer, &floorRect);
 					//SDL_RenderDrawLine(renderer, r* (800 / rays) + WIDTH, lineO / 2, r* (800 / rays) + WIDTH, wh+lineO / 2);
 				}
 			}
