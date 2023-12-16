@@ -15,7 +15,7 @@ int main(int argc, char** argv){
 	MapEditor editor;
 
 	// EDITOR PART
-	game.MakeWindow("Map Editor", WIDTH+400, HEIGHT, editor.isRunning);
+	game.MakeWindow("Map Editor", WIDTH-200, HEIGHT, editor.isRunning);
 	while (editor.isRunning) {
 		game.HandleFps();
 		game.Input(editor.isRunning);
@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 	// GAME PART
 	Player player;
 
-	game.MakeWindow("Raycaster", WIDTH*2, HEIGHT, game.isRunning);
+	game.MakeWindow("Raycaster", WIDTH, HEIGHT, game.isRunning);
 
 	player.Update(game.renderer, game.tilleWidth, game.mapX);
 
@@ -52,11 +52,11 @@ int main(int argc, char** argv){
 
 		SDL_RenderClear(game.renderer);
 
-		game.DrawMap(); // Draws the map
+		//game.DrawMap(); // Draws the map
 
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
 
-		player.Draw(game.renderer); // Draws the player
+		//player.Draw(game.renderer); // Draws the player
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 

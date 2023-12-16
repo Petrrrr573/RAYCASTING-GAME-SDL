@@ -6,7 +6,7 @@
 #include <vector>
 #include <fstream>
 
-#define WIDTH 800
+#define WIDTH 1600
 #define HEIGHT 800
 
 #define PI 3.1415926535

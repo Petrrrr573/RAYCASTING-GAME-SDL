@@ -33,7 +33,7 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
                 mapX++;
                 mapY++;
                 mapSize = mapX * mapY;
-                tilleWidth = WIDTH / mapX;
+                tilleWidth = HEIGHT / mapX;
                 clearMap(map, mapSize);
             }
             // Makes the map smaller
@@ -41,7 +41,7 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
                 mapX--;
                 mapY--;
                 mapSize = mapX * mapY;
-                tilleWidth = WIDTH / mapX;
+                tilleWidth = HEIGHT / mapX;
                 clearMap(map, mapSize);
             }
 
@@ -49,13 +49,13 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
             if (state[SDL_SCANCODE_M]) {
                 saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
                 mapSize = mapX * mapY;
-                tilleWidth = WIDTH / mapX;
+                tilleWidth = HEIGHT / mapX;
             }
             // Loads the saved map
             if (state[SDL_SCANCODE_N]) {
                 openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
                 mapSize = mapX * mapY;
-                tilleWidth = WIDTH / mapX;
+                tilleWidth = HEIGHT / mapX;
             }
 
             // Clears the map

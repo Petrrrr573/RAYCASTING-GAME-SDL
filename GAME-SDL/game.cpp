@@ -33,18 +33,15 @@ void Game::DrawMap() {
 				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
+
+			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+			// Draw the horizontal grid lines
+			SDL_RenderDrawLine(renderer, 0, y * tilleWidth, mapX * tilleWidth, y * tilleWidth);
+
+			// Draw the vertical grid lines
+			SDL_RenderDrawLine(renderer, x * tilleWidth, 0, x * tilleWidth, mapY * tilleWidth);
 		}
-	}
-
-	// Draw the horizontal grid lines
-	for (y = 0; y < mapY; y++) {
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		SDL_RenderDrawLine(renderer, 0, y * tilleWidth, HEIGHT, y * tilleWidth);
-	}
-
-	// Draw the vertical grid lines
-	for (x = 0; x < mapX; x++) {
-		SDL_RenderDrawLine(renderer, x * tilleWidth, 0, x * tilleWidth, WIDTH);
 	}
 
 }
@@ -119,13 +116,13 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	double rayAngle = playerAngle;
 
-	int FOV = 60;
+	int FOV = 70;
 
-	int rays = 800; // number of rays
+	int rays = WIDTH; // number of rays
 
 	rayAngle -= FOV*PI/180/2;
 
-	int playerPlaneDistance = 400 / tan(0.523599); // midle of the screen / tan(30deg)
+	int playerPlaneDistance = 800 / tan(0.523599); // midle of the screen / tan(30deg)
 
 
 	////Drawing floor
@@ -265,8 +262,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		}
 
 		//draws the rays on the minimap
-		if (rayX >= 0 && rayX <= 800) {
-			if (rayY >= 0 && rayY <= 800) {
+		if (rayX >= 0 && rayX <= WIDTH) {
+			if (rayY >= 0 && rayY <= HEIGHT) {
 				if (horizontalHit == true) {
 					if (rayAngle > PI) {
 						my = int(floor((rayY - 1) / tilleWidth));
@@ -288,7 +285,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				mp = my * mapX + mx;
 
 				// hit wall
-				if (mp > 0 && mp < mapX * mapY) {
+				/*if (mp > 0 && mp < mapX * mapY) {
 					if (map[mp] == 1) {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
 					}
@@ -299,7 +296,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
 					SDL_RenderDrawLine(renderer, playerX, playerY, rayX, rayY);
-				}
+				}*/
 
 				// Draw 3D Walls
 				//double wh = (tilleWidth * HEIGHT) / finalDistance;
@@ -323,8 +320,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					lineO -= 200;
 				}
 
-				SDL_Rect rect = { r * (800 / rays) + WIDTH, lineO / 2, 800 / rays, wh };
-				SDL_Rect floorRect = { r * (800 / rays) + WIDTH, lineO / 2 + wh - 1, 800 / rays, 800 - lineO / 2 + wh + 1};
+				SDL_Rect rect = { r * (WIDTH / rays), lineO / 2, WIDTH / rays, wh };
+				SDL_Rect floorRect = { r * (WIDTH / rays), lineO / 2 + wh - 1, WIDTH / rays, HEIGHT - lineO / 2 + wh + 1};
 				if (mp > 0 && mp < mapX * mapY) {
 					if (map[mp] == 1) {
 						if (horizontalHit == true) {

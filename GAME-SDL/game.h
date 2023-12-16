@@ -9,7 +9,7 @@ public:
 	std::vector<int> map;
 
 	bool isRunning;
-	int tilleWidth = WIDTH / mapX; // Gets the width of a tille
+	int tilleWidth = HEIGHT / mapX; // Gets the width of a tille
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
