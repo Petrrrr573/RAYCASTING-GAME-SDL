@@ -301,9 +301,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				// Draw 3D Walls
 				//double wh = (tilleWidth * HEIGHT) / finalDistance;
 				double wh = tilleWidth/finalDistance*playerPlaneDistance;
-				/*if (wh > 1000) {
+				if (wh > 1000) {
 					wh = 1000;
-				}*/
+				}
 
 				lineO = HEIGHT - wh / 1.5;
 
