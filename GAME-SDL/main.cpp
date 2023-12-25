@@ -52,11 +52,11 @@ int main(int argc, char** argv){
 
 		SDL_RenderClear(game.renderer);
 
-		//game.DrawMap(); // Draws the map
+		game.DrawMap(); // Draws the map
 
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
 
-		//player.Draw(game.renderer); // Draws the player
+		player.Draw(game.renderer); // Draws the player
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 
