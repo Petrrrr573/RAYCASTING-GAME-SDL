@@ -7,7 +7,7 @@
 void Game::MakeWindow(const char* name, int width, int height, bool& running) {
 	running = true;
 
-	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, 0);
+	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
 
 	renderer = SDL_CreateRenderer(window, -1, 0);
 
@@ -87,7 +87,7 @@ double Game::distance(double playerX, double playerY, double rayX, double rayY, 
 	double yDifference = rayY - playerY;
 
 	//distance = xDifference * cos(playerAngle) + yDifference * sin(playerAngle);
-	distance = sqrt(xDifference*xDifference + yDifference*yDifference);
+	distance = sqrt(xDifference * xDifference + yDifference * yDifference);
 
 	distance = distance * cos(rayAngle - playerAngle);
 
@@ -105,8 +105,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	double xOffset = 0, yOffset = 0;
 
-	double playerX = xPos + pWidthScaled/2;
-	double playerY = yPos + pWidthScaled/2;
+	double playerX = xPos + pWidthScaled / 2;
+	double playerY = yPos + pWidthScaled / 2;
 
 	double dx = 0, dy = 0; // x, y possitions in a tille
 
@@ -118,11 +118,16 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	int FOV = 70;
 
-	int rays = WIDTH; // number of rays
+	int rays = WIDTH / 2; // number of rays
 
-	rayAngle -= FOV*PI/180/2;
+	rayAngle -= FOV * PI / 180 / 2;
 
-	int playerPlaneDistance = 800 / tan(0.523599); // midle of the screen / tan(30deg)
+	int playerPlaneDistance = 400 / tan(0.523599); // midle of the screen / tan(30deg)
+
+	short prev_column = 0;
+	short current_column = 0;
+	short next_column = 0;
+
 
 
 	////Drawing floor
@@ -170,7 +175,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 		while (dof < 30) {
 			if (rayAngle > PI) {
-				my = int(floor((rayY-1) / tilleWidth));
+				my = int(floor((rayY - 1) / tilleWidth));
 			}
 			else {
 				my = int(floor(rayY / tilleWidth));
@@ -191,7 +196,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		}
 
 		horizontalY = rayY, horizontalX = rayX;
-		horizontalDistance = distance(playerX, playerY, horizontalX, horizontalY,rayAngle, playerAngle);
+		horizontalDistance = distance(playerX, playerY, horizontalX, horizontalY, rayAngle, playerAngle);
 
 		/* --- Check vertical lines--- */
 
@@ -224,7 +229,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 		while (dof < 30) {
 			if (rayAngle > PI2 && rayAngle < PI3) {
-				mx = int(floor((rayX-1) / tilleWidth));
+				mx = int(floor((rayX - 1) / tilleWidth));
 			}
 			else {
 				mx = int(floor(rayX / tilleWidth));
@@ -245,7 +250,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		}
 
 		verticalY = rayY, verticalX = rayX;
-		verticalDistance = distance(playerX, playerY, verticalX, verticalY, rayAngle,playerAngle);
+		verticalDistance = distance(playerX, playerY, verticalX, verticalY, rayAngle, playerAngle);
 
 		// Get shorter distance
 		if (horizontalDistance > verticalDistance) {
@@ -285,7 +290,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				mp = my * mapX + mx;
 
 				// hit wall
-				/*if (mp > 0 && mp < mapX * mapY) {
+				if (mp > 0 && mp < mapX * mapY) {
 					if (map[mp] == 1) {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
 					}
@@ -296,14 +301,14 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
 					SDL_RenderDrawLine(renderer, playerX, playerY, rayX, rayY);
-				}*/
+				}
 
 				// Draw 3D Walls
 				//double wh = (tilleWidth * HEIGHT) / finalDistance;
-				double wh = tilleWidth/finalDistance*playerPlaneDistance;
-				if (wh > 1000) {
+				double wh = tilleWidth / finalDistance * playerPlaneDistance;
+				/*if (wh > 1000) {
 					wh = 1000;
-				}
+				}*/
 
 				lineO = HEIGHT - wh / 1.5;
 
@@ -320,37 +325,64 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					lineO -= 200;
 				}
 
-				SDL_Rect rect = { r * (WIDTH / rays), lineO / 2, WIDTH / rays, wh };
-				SDL_Rect floorRect = { r * (WIDTH / rays), lineO / 2 + wh - 1, WIDTH / rays, HEIGHT - lineO / 2 + wh + 1};
-				if (mp > 0 && mp < mapX * mapY) {
-					if (map[mp] == 1) {
-						if (horizontalHit == true) {
-							SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
+				// Calculate the ray direction relative to the player's view
+				float ray_direction = playerAngle + FOV * (0.5f - (float)r / rays);
+
+				// Calculate the position of the column in the projection
+				float ray_projection_position = 0.5f * tan(ray_direction * PI / 180 / 2) / tan(0.5f * FOV * PI / 180 / 2);
+
+				// Adjust the position based on the current ray angle
+				current_column = static_cast<short>(round(800 * (0.5f - ray_projection_position)));
+
+				float idk = 0;
+				if (current_column < 0) {
+					idk = -current_column;
+				}
+
+				if (r + 1 < rays) {
+					float next_ray_direction = playerAngle + FOV * (0.5f - (float)(r + 1) / rays);
+
+					// Calculate the position of the column in the projection
+					float next_ray_projection_position = 0.5f * tan(next_ray_direction * PI / 180 / 2) / tan(0.5f * FOV * PI / 180 / 2);
+
+					// Adjust the position based on the current ray angle
+					next_column = static_cast<short>(round(800 * (0.5f - next_ray_projection_position)));
+				}
+
+				//wh = round(HEIGHT * playerPlaneDistance / ())
+
+				if (prev_column < current_column) {
+					SDL_Rect rect = { current_column + 800 + idk, lineO / 2, next_column - current_column, wh };
+					SDL_Rect floorRect = { r * (WIDTH / rays) + 800, lineO / 2 + wh - 1, WIDTH / rays, HEIGHT - lineO / 2 + wh + 1 };
+					if (mp > 0 && mp < mapX * mapY) {
+						if (map[mp] == 1) {
+							if (horizontalHit == true) {
+								SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
+							}
+							else if (horizontalHit == false) {
+								SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
+							}
 						}
-						else if (horizontalHit == false) {
-							SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
+						else if (map[mp] == 2) {
+							if (horizontalHit == true) {
+								SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
+							}
+							else if (horizontalHit == false) {
+								SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
+							}
 						}
+						else if (map[mp] == 3) {
+							SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
+						}
+						//Drawing floor
+						SDL_RenderFillRect(renderer, &rect);
+						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
+						SDL_RenderFillRect(renderer, &floorRect);
+						//SDL_RenderDrawLine(renderer, r* (800 / rays) + WIDTH, lineO / 2, r* (800 / rays) + WIDTH, wh+lineO / 2);
 					}
-					else if (map[mp] == 2) {
-						if (horizontalHit == true) {
-							SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
-						}
-						else if (horizontalHit == false) {
-							SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
-						}
-					}
-					else if (map[mp] == 3) {
-						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
-					}
-					//Drawing floor
-					SDL_RenderFillRect(renderer, &rect);
-					SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
-					SDL_RenderFillRect(renderer, &floorRect);
-					//SDL_RenderDrawLine(renderer, r* (800 / rays) + WIDTH, lineO / 2, r* (800 / rays) + WIDTH, wh+lineO / 2);
 				}
 			}
 		}
-
-		rayAngle += FOV*PI/180/rays;
+		rayAngle += FOV * PI / 180 / rays;
 	}
 }
