@@ -118,7 +118,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	int FOV = 70;
 
-	int rays = WIDTH / 2; // number of rays
+	int rays = 800; // number of rays
 
 	rayAngle -= FOV * PI / 180 / 2;
 
@@ -267,7 +267,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		}
 
 		//draws the rays on the minimap
-		if (rayX >= 0 && rayX <= WIDTH) {
+		if (rayX >= 0 && rayX <= WIDTH/2) {
 			if (rayY >= 0 && rayY <= HEIGHT) {
 				if (horizontalHit == true) {
 					if (rayAngle > PI) {
@@ -305,10 +305,38 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				// Draw 3D Walls
 				//double wh = (tilleWidth * HEIGHT) / finalDistance;
-				double wh = tilleWidth / finalDistance * playerPlaneDistance;
+				//double wh = tilleWidth / finalDistance * playerPlaneDistance;
 				/*if (wh > 1000) {
 					wh = 1000;
 				}*/
+
+				// Calculate the ray direction relative to the player's view
+				float ray_direction = playerAngle + FOV * (0.5f - (float)r / rays);
+
+				// Calculate the position of the column in the projection
+				float ray_projection_position = 0.5f * tan(ray_direction * PI / 180) / tan(0.5f * FOV * PI / 180);
+
+				// Adjust the position based on the current ray angle
+				current_column = static_cast<short>(round(800 * (0.5f - ray_projection_position)));
+				//next_column = 800;
+
+				//double wh = round(HEIGHT * playerPlaneDistance / (finalDistance * cos(ray_direction * PI / 180)));
+				double wh = tilleWidth / finalDistance * playerPlaneDistance;
+
+				float idk = 0;
+				if (current_column < 0) {
+					idk = -current_column;
+				}
+
+				if (r + 1  < rays) {
+					float next_ray_direction = playerAngle + FOV * (0.5f - (float)(r + 1) / rays);
+
+					// Calculate the position of the column in the projection
+					float next_ray_projection_position = 0.5f * tan(next_ray_direction * PI / 180) / tan(0.5f * FOV * PI / 180);
+
+					// Adjust the position based on the current ray angle
+					next_column = static_cast<short>(round(800 * (0.5f - next_ray_projection_position)));
+				}
 
 				lineO = HEIGHT - wh / 1.5;
 
@@ -325,35 +353,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					lineO -= 200;
 				}
 
-				// Calculate the ray direction relative to the player's view
-				float ray_direction = playerAngle + FOV * (0.5f - (float)r / rays);
-
-				// Calculate the position of the column in the projection
-				float ray_projection_position = 0.5f * tan(ray_direction * PI / 180 / 2) / tan(0.5f * FOV * PI / 180 / 2);
-
-				// Adjust the position based on the current ray angle
-				current_column = static_cast<short>(round(800 * (0.5f - ray_projection_position)));
-
-				float idk = 0;
-				if (current_column < 0) {
-					idk = -current_column;
-				}
-
-				if (r + 1 < rays) {
-					float next_ray_direction = playerAngle + FOV * (0.5f - (float)(r + 1) / rays);
-
-					// Calculate the position of the column in the projection
-					float next_ray_projection_position = 0.5f * tan(next_ray_direction * PI / 180 / 2) / tan(0.5f * FOV * PI / 180 / 2);
-
-					// Adjust the position based on the current ray angle
-					next_column = static_cast<short>(round(800 * (0.5f - next_ray_projection_position)));
-				}
-
-				//wh = round(HEIGHT * playerPlaneDistance / ())
-
 				if (prev_column < current_column) {
 					SDL_Rect rect = { current_column + 800 + idk, lineO / 2, next_column - current_column, wh };
-					SDL_Rect floorRect = { r * (WIDTH / rays) + 800, lineO / 2 + wh - 1, WIDTH / rays, HEIGHT - lineO / 2 + wh + 1 };
+					SDL_Rect floorRect = { current_column + 800 + idk, lineO / 2 + wh - 1, next_column - current_column, HEIGHT - lineO / 2 + wh + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
 						if (map[mp] == 1) {
 							if (horizontalHit == true) {
