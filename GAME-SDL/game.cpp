@@ -311,16 +311,15 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}*/
 
 				// Calculate the ray direction relative to the player's view
-				float ray_direction = playerAngle + FOV * (0.5f - (float)r / rays);
+				float ray_direction = FOV * (0.5f * 800 - (float)r) / (rays-1);
 
 				// Calculate the position of the column in the projection
 				float ray_projection_position = 0.5f * tan(ray_direction * PI / 180) / tan(0.5f * FOV * PI / 180);
 
 				// Adjust the position based on the current ray angle
 				current_column = static_cast<short>(round(800 * (0.5f - ray_projection_position)));
-				//next_column = 800;
+				next_column = 800;
 
-				//double wh = round(HEIGHT * playerPlaneDistance / (finalDistance * cos(ray_direction * PI / 180)));
 				double wh = tilleWidth / finalDistance * playerPlaneDistance;
 
 				float idk = 0;
@@ -329,7 +328,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				if (r + 1  < rays) {
-					float next_ray_direction = playerAngle + FOV * (0.5f - (float)(r + 1) / rays);
+					float next_ray_direction = FOV * (0.5f * 800 - (float)(r + 1)) / (rays-1);
 
 					// Calculate the position of the column in the projection
 					float next_ray_projection_position = 0.5f * tan(next_ray_direction * PI / 180) / tan(0.5f * FOV * PI / 180);
