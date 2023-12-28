@@ -8,11 +8,13 @@ void Player::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
 	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
 
-	xPos = 2 * tilleWidth;
-	yPos = 2 * tilleWidth;
+	xPos = 2 * 50;
+	yPos = 2 * 50;
 
-	scale = 16 * scale/mapX;
-	pWidthScaled = playerWidth * scale;
+	scale = 16 / mapX;
+	if (scale <= 0) {
+		scale = 0.5;
+	}
 }
 
 void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map) {
@@ -72,7 +74,7 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 	}
 }
 
-void Player::Draw(SDL_Renderer* renderer) {
+void Player::Draw(SDL_Renderer* renderer, int tilleWidth) {
 
 	// Calculate the source rectangle based on the current frame
 	int srcX = round(currentFrame * playerWidth);
@@ -80,7 +82,7 @@ void Player::Draw(SDL_Renderer* renderer) {
 
 	// Set up the source and destination rectangles
 	SDL_Rect srcRect = { srcX, srcY, playerWidth, playerHeight };
-	SDL_Rect destRect = { xPos, yPos, playerWidth * scale, playerHeight * scale };
+	SDL_Rect destRect = {xPos/50*tilleWidth, yPos/50*tilleWidth, 10*scale, 10*scale};
 
 	// Render the player's current frame
 	SDL_RenderCopy(renderer, playerTexture, &srcRect, &destRect);

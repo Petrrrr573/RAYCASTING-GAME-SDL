@@ -8,8 +8,12 @@ public:
 
 	std::vector<int> map;
 
+	int minimapWidth = 320;
+
 	bool isRunning;
-	int tilleWidth = HEIGHT / mapX; // Gets the width of a tille
+	int tilleWidth = 50;
+	int mapEditorTilleWidth = HEIGHT / mapX;
+	int minimapTilleWidth = minimapWidth/mapX;
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -21,7 +25,7 @@ public:
 	double lineO;
 
 	void MakeWindow(const char* name, int width, int height, bool& running);
-	void DrawMap();
+	void DrawMap(int tilleWidth);
 	void HandleFps();
 	void Input(bool&running);
 	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle);

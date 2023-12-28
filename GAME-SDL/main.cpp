@@ -22,9 +22,9 @@ int main(int argc, char** argv){
 
 		SDL_RenderClear(game.renderer);
 
-		game.DrawMap(); // Draws the map
+		game.DrawMap(game.mapEditorTilleWidth); // Draws the map
 
-		editor.update(game.mapX, game.mapY, game.mapSize, game.map, game.tilleWidth);
+		editor.update(game.mapX, game.mapY, game.mapSize, game.map, game.mapEditorTilleWidth);
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 
@@ -40,7 +40,8 @@ int main(int argc, char** argv){
 
 	game.MakeWindow("Raycaster", WIDTH, HEIGHT, game.isRunning);
 
-	player.Update(game.renderer, game.tilleWidth, game.mapX);
+	game.minimapTilleWidth = game.minimapWidth / game.mapX;
+	player.Update(game.renderer, game.minimapTilleWidth, game.mapX);
 
 
 	// Main loop
@@ -52,11 +53,11 @@ int main(int argc, char** argv){
 
 		SDL_RenderClear(game.renderer);
 
-		game.DrawMap(); // Draws the map
-
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
 
-		player.Draw(game.renderer); // Draws the player
+		game.DrawMap(game.minimapTilleWidth); // Draws the map
+
+		player.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 

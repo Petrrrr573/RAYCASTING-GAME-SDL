@@ -17,8 +17,13 @@ void Game::MakeWindow(const char* name, int width, int height, bool& running) {
 }
 
 // Draws the minimap
-void Game::DrawMap() {
+void Game::DrawMap(int tilleWidth) {
 	int x, y;
+
+	SDL_SetRenderDrawColor(renderer, SKY_COLOR);
+	SDL_Rect rect = {0,0, mapX * tilleWidth, mapY * tilleWidth};
+	SDL_RenderFillRect(renderer, &rect);
+
 	// Draw the map tiles
 	for (y = 0; y < mapY; y++) {
 		for (x = 0; x < mapX; x++) {
@@ -292,7 +297,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					else {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
-					SDL_RenderDrawLine(renderer, playerX, playerY, rayX, rayY);
+					SDL_RenderDrawLine(renderer, playerX/tilleWidth*minimapTilleWidth, playerY / tilleWidth * minimapTilleWidth, rayX / tilleWidth * minimapTilleWidth, rayY / tilleWidth * minimapTilleWidth);
 				}
 
 				// Calculate the ray direction relative to the player's view
@@ -338,8 +343,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				if (prevColumn < currentColumn) {
-					SDL_Rect rect = { currentColumn + 800 + idk, lineO / 2, nextColumn - currentColumn, wh };
-					SDL_Rect floorRect = { currentColumn + 800 + idk, lineO / 2 + wh - 1, nextColumn - currentColumn, HEIGHT - lineO / 2 + wh + 1 };
+					SDL_Rect rect = { currentColumn + idk, lineO / 2, nextColumn - currentColumn, wh };
+					SDL_Rect floorRect = { currentColumn + idk, lineO / 2 + wh - 1, nextColumn - currentColumn, HEIGHT - lineO / 2 + wh + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
 						if (map[mp] == 1) {
 							if (horizontalHit == true) {
