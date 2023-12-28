@@ -26,3 +26,5 @@
 #define WALL_COLOR_2_2 0, 100, 100, 255
 
 #define WALL_COLOR_3 40, 40, 40, 255
+
+#define WIDTH_3D 800

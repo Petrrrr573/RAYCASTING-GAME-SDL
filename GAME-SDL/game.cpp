@@ -118,11 +118,11 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	int FOV = 70;
 
-	int rays = 800; // number of rays
+	int rays = WIDTH_3D; // number of rays
 
 	rayAngle -= FOV * PI / 180 / 2;
 
-	int playerPlaneDistance = 400 / tan(0.523599); // midle of the screen / tan(30deg)
+	int playerPlaneDistance = WIDTH_3D/2 / tan(0.610865); // midle of the screen / tan(35deg)
 
 	short prevColumn = 0;
 	short currentColumn = 0;
@@ -296,14 +296,14 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				// Calculate the ray direction relative to the player's view
-				float rayDirection = FOV * (0.5f * 800 - (float)r) / (rays-1);
+				float rayDirection = FOV * (0.5f * WIDTH_3D - (float)r) / (rays-1);
 
 				// Calculate the position of the column in the projection
 				float rayProjectionPosition = 0.5f * tan(rayDirection * PI / 180) / tan(0.5f * FOV * PI / 180);
 
 				// Adjust the position based on the current ray angle
-				currentColumn = static_cast<short>(round(800 * (0.5f - rayProjectionPosition)));
-				nextColumn = 800;
+				currentColumn = static_cast<short>(round(WIDTH_3D * (0.5f - rayProjectionPosition)));
+				nextColumn = WIDTH_3D;
 
 				double wh = tilleWidth / finalDistance * playerPlaneDistance;
 
@@ -313,13 +313,13 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				if (r + 1  < rays) {
-					float nextRayDirection = FOV * (0.5f * 800 - (float)(r + 1)) / (rays-1);
+					float nextRayDirection = FOV * (0.5f * WIDTH_3D - (float)(r + 1)) / (rays-1);
 
 					// Calculate the position of the column in the projection
 					float nextRayProjectionPosition = 0.5f * tan(nextRayDirection * PI / 180) / tan(0.5f * FOV * PI / 180);
 
 					// Adjust the position based on the current ray angle
-					nextColumn = static_cast<short>(round(800 * (0.5f - nextRayProjectionPosition)));
+					nextColumn = static_cast<short>(round(WIDTH_3D * (0.5f - nextRayProjectionPosition)));
 				}
 
 				lineO = HEIGHT - wh / 1.5;
