@@ -319,8 +319,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					float nextRayProjectionPosition = 0.5f * tan(nextRayDirection * PI / 180) / tan(0.5f * FOV * PI / 180);
 
 					// Adjust the position based on the current ray angle
-					nextColumn = static
-						cast<short>(round(800 * (0.5f - nextRayProjectionPosition)));
+					nextColumn = static_cast<short>(round(800 * (0.5f - nextRayProjectionPosition)));
 				}
 
 				lineO = HEIGHT - wh / 1.5;
