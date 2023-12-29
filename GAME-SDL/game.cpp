@@ -84,6 +84,10 @@ void Game::Input(bool& running) {
 	}
 }
 
+float Game::degToRad(float degrees) {
+	return degrees * PI / 180;
+}
+
 // Gets the distance of a ray
 double Game::distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle) {
 	double distance = 0;
@@ -125,7 +129,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	int rays = WIDTH_3D; // number of rays
 
-	rayAngle -= FOV * PI / 180 / 2;
+	rayAngle -= degToRad(FOV/2);
 
 	int playerPlaneDistance = WIDTH_3D/2 / tan(0.610865); // midle of the screen / tan(35deg)
 
@@ -304,7 +308,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				float rayDirection = FOV * (0.5f * WIDTH_3D - (float)r) / (rays-1);
 
 				// Calculate the position of the column in the projection
-				float rayProjectionPosition = 0.5f * tan(rayDirection * PI / 180) / tan(0.5f * FOV * PI / 180);
+				float rayProjectionPosition = 0.5f * tan(degToRad(rayDirection)) / tan(0.5f * degToRad(FOV));
 
 				// Adjust the position based on the current ray angle
 				currentColumn = static_cast<short>(round(WIDTH_3D * (0.5f - rayProjectionPosition)));
@@ -321,7 +325,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					float nextRayDirection = FOV * (0.5f * WIDTH_3D - (float)(r + 1)) / (rays-1);
 
 					// Calculate the position of the column in the projection
-					float nextRayProjectionPosition = 0.5f * tan(nextRayDirection * PI / 180) / tan(0.5f * FOV * PI / 180);
+					float nextRayProjectionPosition = 0.5f * tan(degToRad(nextRayDirection)) / tan(0.5f * degToRad(FOV));
 
 					// Adjust the position based on the current ray angle
 					nextColumn = static_cast<short>(round(WIDTH_3D * (0.5f - nextRayProjectionPosition)));
@@ -373,6 +377,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 			}
 		}
-		rayAngle += FOV * PI / 180 / rays;
+		rayAngle += degToRad(FOV) / rays;
 	}
 }
