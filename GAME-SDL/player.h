@@ -9,7 +9,7 @@ public:
 	double yPos = 100;
 	double playerAngle;
 
-	int playerSpeed = 3;
+	int playerSpeed = 6;
 
 	const int playerWidth = 8;   // Width of each frame in the texture
 	const int playerHeight = 8;  // Height of each frame in the texture

@@ -14,6 +14,14 @@ void Game::MakeWindow(const char* name, int width, int height, bool& running) {
 	for (int i = 0; i < mapSize; i++) {
 		map.push_back(0);
 	}
+
+	wallSurface1 = IMG_Load("C:\\Users\\Petr\\Desktop\\wall1.png");
+	wallTexture1 = SDL_CreateTextureFromSurface(renderer, wallSurface1);
+	SDL_FreeSurface(wallSurface1);
+
+	wallSurface2 = IMG_Load("C:\\Users\\Petr\\Desktop\\wall2.png");
+	wallTexture2 = SDL_CreateTextureFromSurface(renderer, wallSurface2);
+	SDL_FreeSurface(wallSurface2);
 }
 
 // Draws the minimap
@@ -133,7 +141,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	int playerPlaneDistance = WIDTH_3D/2 / tan(0.610865); // midle of the screen / tan(35deg)
 
-	short prevColumn = 0;
+	short prevColumn = -1;
 	short currentColumn = 0;
 	short nextColumn = 0;
 
@@ -350,7 +358,29 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					SDL_Rect rect = { currentColumn + idk, lineO / 2, nextColumn - currentColumn, wh };
 					SDL_Rect floorRect = { currentColumn + idk, lineO / 2 + wh - 1, nextColumn - currentColumn, HEIGHT - lineO / 2 + wh + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
+						SDL_Rect srcRect;
+						SDL_Rect destRect;
+						if (horizontalHit) {
+							int xwall = rayX - floor(rayX/tilleWidth) * tilleWidth;
+							int srcX = floor(xwall);
+							int srcY = 0;
+							srcRect = { srcX, srcY, 1, 50};
+							destRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh)};
+						}
+						else {
+							int ywall = rayY - floor(rayY/tilleWidth) * tilleWidth;
+							int srcX = floor(ywall);
+							int srcY = 0;
+							srcRect = { srcX, srcY, 1, 50 };
+							destRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh)};
+						}
 						if (map[mp] == 1) {
+							SDL_RenderCopy(renderer, wallTexture1, &srcRect, &destRect);
+						}
+						else if (map[mp] == 2) {
+							SDL_RenderCopy(renderer, wallTexture2, &srcRect, &destRect);
+						}
+						/*if (map[mp] == 1) {
 							if (horizontalHit == true) {
 								SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
 							}
@@ -368,9 +398,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						}
 						else if (map[mp] == 3) {
 							SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
-						}
+						}*/
+						//SDL_RenderFillRect(renderer, &rect);
 						//Drawing floor
-						SDL_RenderFillRect(renderer, &rect);
 						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
 						SDL_RenderFillRect(renderer, &floorRect);
 					}
