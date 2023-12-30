@@ -11,3 +11,5 @@
 .gitignore
 /.gitignore
 /.gitignore
+/GAME-SDL/GAME-SDL.vcxproj.filters
+/GAME-SDL/GAME-SDL.vcxproj
