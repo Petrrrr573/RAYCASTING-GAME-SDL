@@ -15,13 +15,9 @@ void Game::MakeWindow(const char* name, int width, int height, bool& running) {
 		map.push_back(0);
 	}
 
-	wallSurface1 = IMG_Load("C:\\Users\\Petr\\Desktop\\wall1.png");
-	wallTexture1 = SDL_CreateTextureFromSurface(renderer, wallSurface1);
-	SDL_FreeSurface(wallSurface1);
-
-	wallSurface2 = IMG_Load("C:\\Users\\Petr\\Desktop\\wall2.png");
-	wallTexture2 = SDL_CreateTextureFromSurface(renderer, wallSurface2);
-	SDL_FreeSurface(wallSurface2);
+	wallSurface = IMG_Load("wall.png");
+	wallTexture = SDL_CreateTextureFromSurface(renderer, wallSurface);
+	SDL_FreeSurface(wallSurface);
 }
 
 // Draws the minimap
@@ -43,6 +39,11 @@ void Game::DrawMap(int tilleWidth) {
 
 			if (map[y * mapX + x] == 2) {
 				SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
+				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
+				SDL_RenderFillRect(renderer, &rect);
+			}
+			if (map[y * mapX + x] == 3) {
+				SDL_SetRenderDrawColor(renderer, 150, 100, 100, 255);
 				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
 			}
@@ -144,6 +145,11 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	short prevColumn = -1;
 	short currentColumn = 0;
 	short nextColumn = 0;
+
+	int xwall;
+	int ywall;
+	int srcX;
+	int srcY = 0;
 
 	for (int r = 0; r < rays; r++) {
 		bool horizontalHit;
@@ -306,6 +312,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					else if (map[mp] == 2) {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
 					}
+					else if (map[mp] == 3) {
+						SDL_SetRenderDrawColor(renderer, 150, 100, 100, 255);
+					}
 					else {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
@@ -360,26 +369,25 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					if (mp > 0 && mp < mapX * mapY) {
 						SDL_Rect srcRect;
 						SDL_Rect destRect;
+						xwall = rayX - floor(rayX / tilleWidth) * tilleWidth;
+						ywall = rayY - floor(rayY / tilleWidth) * tilleWidth;
 						if (horizontalHit) {
-							int xwall = rayX - floor(rayX/tilleWidth) * tilleWidth;
-							int srcX = floor(xwall);
-							int srcY = 0;
-							srcRect = { srcX, srcY, 1, 50};
-							destRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh)};
+							srcX = floor(xwall);
+							if (rayAngle < PI) {
+								srcX = 49 - srcX;
+							}
 						}
 						else {
-							int ywall = rayY - floor(rayY/tilleWidth) * tilleWidth;
-							int srcX = floor(ywall);
-							int srcY = 0;
-							srcRect = { srcX, srcY, 1, 50 };
-							destRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh)};
+							srcX = floor(ywall);;
+							if (rayAngle > PI2 && rayAngle < PI3) {
+								srcX = 49 - srcX;
+							}
 						}
-						if (map[mp] == 1) {
-							SDL_RenderCopy(renderer, wallTexture1, &srcRect, &destRect);
-						}
-						else if (map[mp] == 2) {
-							SDL_RenderCopy(renderer, wallTexture2, &srcRect, &destRect);
-						}
+
+						srcX += (map[mp] - 1) * 50;
+						srcRect = { srcX, srcY, 1, 50 };
+						destRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh) };
+						SDL_RenderCopy(renderer, wallTexture, &srcRect, &destRect);
 						/*if (map[mp] == 1) {
 							if (horizontalHit == true) {
 								SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);

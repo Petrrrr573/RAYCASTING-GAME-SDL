@@ -18,12 +18,8 @@ public:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
-
-	SDL_Surface* wallSurface1;
-	SDL_Texture* wallTexture1;
-
-	SDL_Surface* wallSurface2;
-	SDL_Texture* wallTexture2;
+	SDL_Surface* wallSurface;
+	SDL_Texture* wallTexture;
 
 	int lastFrame, frameCount, fps;
 

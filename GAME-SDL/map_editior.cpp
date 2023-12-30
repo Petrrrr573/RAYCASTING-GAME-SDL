@@ -26,6 +26,9 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
                 map[mouseGridY * mapX + mouseGridX] = 2;
             }
             if (state[SDL_SCANCODE_D]) {
+                map[mouseGridY * mapX + mouseGridX] = 3;
+            }
+            if (state[SDL_SCANCODE_F]) {
                 map[mouseGridY * mapX + mouseGridX] = 0;
             }
             // Makes the map bigger
