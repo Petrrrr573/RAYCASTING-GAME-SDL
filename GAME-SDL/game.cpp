@@ -31,21 +31,20 @@ void Game::DrawMap(int tilleWidth) {
 	// Draw the map tiles
 	for (y = 0; y < mapY; y++) {
 		for (x = 0; x < mapX; x++) {
-			if (map[y * mapX + x] == 1) {
+			SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
+			switch (map[y * mapX + x]) {
+			case 1:
 				SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
-				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
-			}
-
-			if (map[y * mapX + x] == 2) {
+				break;
+			case 2:
 				SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
-				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
-			}
-			if (map[y * mapX + x] == 3) {
+				break;
+			case 3:
 				SDL_SetRenderDrawColor(renderer, 150, 100, 100, 255);
-				SDL_Rect rect = { x * tilleWidth + 1, y * tilleWidth + 1,tilleWidth - 1, tilleWidth - 1 };
 				SDL_RenderFillRect(renderer, &rect);
+				break;
 			}
 
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -146,10 +145,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	short currentColumn = 0;
 	short nextColumn = 0;
 
-	int xwall;
-	int ywall;
-	int srcX;
-	int srcY = 0;
+	int wallX;
+	int wallY;
 
 	for (int r = 0; r < rays; r++) {
 		bool horizontalHit;
@@ -369,16 +366,18 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					if (mp > 0 && mp < mapX * mapY) {
 						SDL_Rect srcRect;
 						SDL_Rect destRect;
-						xwall = rayX - floor(rayX / tilleWidth) * tilleWidth;
-						ywall = rayY - floor(rayY / tilleWidth) * tilleWidth;
+						int srcX;
+						int srcY = 0;
+						wallX = rayX - floor(rayX / tilleWidth) * tilleWidth;
+						wallY = rayY - floor(rayY / tilleWidth) * tilleWidth;
 						if (horizontalHit) {
-							srcX = floor(xwall);
+							srcX = floor(wallX);
 							if (rayAngle < PI) {
 								srcX = 49 - srcX;
 							}
 						}
 						else {
-							srcX = floor(ywall);;
+							srcX = floor(wallY);;
 							if (rayAngle > PI2 && rayAngle < PI3) {
 								srcX = 49 - srcX;
 							}
