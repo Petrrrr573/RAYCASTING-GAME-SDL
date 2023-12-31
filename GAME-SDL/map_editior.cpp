@@ -8,8 +8,8 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
         }
     }
 
-    if (mouseX < WIDTH && mouseX >= 0) {
-        if (mouseY < HEIGHT && mouseY >= 0) {
+    if (mouseX < tilleWidth*mapX && mouseX >= 0) {
+        if (mouseY < tilleWidth*mapY && mouseY >= 0) {
             // X, Y mouse grid possition
             int mouseGridX = mouseX / tilleWidth;
             int mouseGridY = mouseY / tilleWidth;
