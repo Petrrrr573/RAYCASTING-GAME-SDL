@@ -15,7 +15,7 @@ public:
 	SDL_Rect destRect;
 
 	Button(SDL_Renderer* renderer, int x, int y, int type) {
-		buttonSurface = IMG_Load("C:\\Users\\Petr\\Desktop\\loadsavebuttons.png");
+		buttonSurface = IMG_Load("buttons.png");
 		buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
 		SDL_FreeSurface(buttonSurface);
 

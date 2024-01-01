@@ -4,7 +4,7 @@
 // Handles inputs
 
 void Player::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
-	playerSurface = IMG_Load("C:\\Users\\Petr\\Desktop\\player.png");
+	playerSurface = IMG_Load("player.png");
 	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
 
