@@ -5,6 +5,7 @@
 #include "main.h"
 #include "game.h"
 #include "player.h"
+#include "button.h"
 #include "map_editor.h"
 
 
@@ -12,10 +13,13 @@
 int main(int argc, char** argv){
 	SDL_Init(SDL_INIT_EVERYTHING);
 	Game game;
-	MapEditor editor;
 
 	// EDITOR PART
-	game.MakeWindow("Map Editor", WIDTH-200, HEIGHT, editor.isRunning);
+	game.MakeWindow("Map Editor", WIDTH - 200, HEIGHT);
+
+	MapEditor editor(game.renderer);
+	editor.isRunning = true;
+
 	while (editor.isRunning) {
 		game.HandleFps();
 		game.Input(editor.isRunning);
@@ -24,7 +28,7 @@ int main(int argc, char** argv){
 
 		game.DrawMap(game.mapEditorTilleWidth); // Draws the map
 
-		editor.update(game.mapX, game.mapY, game.mapSize, game.map, game.mapEditorTilleWidth);
+		editor.update(game.mapX, game.mapY, game.mapSize, game.map, game.mapEditorTilleWidth, game.renderer);
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 
@@ -38,7 +42,8 @@ int main(int argc, char** argv){
 	// GAME PART
 	Player player;
 
-	game.MakeWindow("Raycaster", WIDTH, HEIGHT, game.isRunning);
+	game.MakeWindow("Raycaster", WIDTH, HEIGHT);
+	game.isRunning = true;
 
 	game.minimapTilleWidth = game.minimapWidth / game.mapX;
 	player.Update(game.renderer, game.minimapTilleWidth, game.mapX);

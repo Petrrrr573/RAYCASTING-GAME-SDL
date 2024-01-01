@@ -4,9 +4,7 @@
 #include "game.h"
 
 // game Class
-void Game::MakeWindow(const char* name, int width, int height, bool& running) {
-	running = true;
-
+void Game::MakeWindow(const char* name, int width, int height) {
 	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
 
 	renderer = SDL_CreateRenderer(window, -1, 0);

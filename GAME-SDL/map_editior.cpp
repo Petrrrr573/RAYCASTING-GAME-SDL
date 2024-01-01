@@ -1,10 +1,32 @@
 #include "map_editor.h"
 
-void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth) {
-	SDL_Event event;
-    if (SDL_PollEvent(&event)) {
-        if (event.type == SDL_MOUSEMOTION){
+MapEditor::MapEditor(SDL_Renderer* renderer)
+    : saveButton(renderer, 900, 100, 1), loadButton(renderer, 1100, 100, 2) {
+}
+
+void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth, SDL_Renderer* renderer) {
+    saveButton.Draw(renderer);
+    loadButton.Draw(renderer);
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_MOUSEMOTION) {
             SDL_GetMouseState(&mouseX, &mouseY);
+        }
+
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.button.button == SDL_BUTTON_LEFT) {
+                if (saveButton.Check(mouseX, mouseY) == true) {
+                    saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
+                    mapSize = mapX * mapY;
+                    tilleWidth = HEIGHT / mapX;
+                }
+                if (loadButton.Check(mouseX, mouseY) == true) {
+                    openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
+                    mapSize = mapX * mapY;
+                    tilleWidth = HEIGHT / mapX;
+                }
+            }
         }
     }
 

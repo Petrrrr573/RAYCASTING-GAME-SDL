@@ -27,7 +27,7 @@ public:
 
 	double lineO;
 
-	void MakeWindow(const char* name, int width, int height, bool& running);
+	void MakeWindow(const char* name, int width, int height);
 	void DrawMap(int tilleWidth);
 	void HandleFps();
 	void Input(bool& running);
