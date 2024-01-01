@@ -19,13 +19,20 @@ public:
 		buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
 		SDL_FreeSurface(buttonSurface);
 
-		if (type == 1 || type == 2){
+		switch (type){
+		case 1: case 2:
 			_w = 150;
 			_h = 100;
+			srcRect = { (type - 1) * _w, 0, _w, _h };
+			break;
+		case 3: case 4: case 5:
+			_w = 50;
+			_h = 50;
+			srcRect = { (type - 3) * _w, 100, _w, _h };
+			break;
 		}
 		_x = x;
 		_y = y;
-		srcRect = { (type - 1) * 150, 0, _w, _h };
 		destRect = { x, y, _w, _h };
 	}
 

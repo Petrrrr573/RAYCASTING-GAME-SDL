@@ -1,45 +1,29 @@
 #include "map_editor.h"
 
 MapEditor::MapEditor(SDL_Renderer* renderer)
-    : saveButton(renderer, 900, 100, 1), loadButton(renderer, 1100, 100, 2) {
+    : saveButton(renderer, 900, 100, 1), loadButton(renderer, 1100, 100, 2), wall1(renderer, 900, 300, 3), wall2(renderer, 900, 375, 4), wall3(renderer, 900, 450, 5) {
 }
 
 void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth, SDL_Renderer* renderer) {
     saveButton.Draw(renderer);
     loadButton.Draw(renderer);
 
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_MOUSEMOTION) {
-            SDL_GetMouseState(&mouseX, &mouseY);
-        }
+    wall1.Draw(renderer);
+    wall2.Draw(renderer);
+    wall3.Draw(renderer);
 
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
-            if (event.button.button == SDL_BUTTON_LEFT) {
-                if (saveButton.Check(mouseX, mouseY) == true) {
-                    saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
-                    mapSize = mapX * mapY;
-                    tilleWidth = HEIGHT / mapX;
-                }
-                if (loadButton.Check(mouseX, mouseY) == true) {
-                    openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
-                    mapSize = mapX * mapY;
-                    tilleWidth = HEIGHT / mapX;
-                }
-            }
-        }
-    }
+    std::cout << currentWall << std::endl;
+
+    SDL_Event event;
+
+    SDL_GetMouseState(&mouseX, &mouseY);
+
+    const Uint8* state = SDL_GetKeyboardState(NULL);
 
     if (mouseX < tilleWidth*mapX && mouseX >= 0) {
         if (mouseY < tilleWidth*mapY && mouseY >= 0) {
-            // X, Y mouse grid possition
-            int mouseGridX = mouseX / tilleWidth;
-            int mouseGridY = mouseY / tilleWidth;
-
-
-            const Uint8* state = SDL_GetKeyboardState(NULL);
-
-            SDL_PollEvent(&event);
+            mouseGridX = mouseX / tilleWidth;
+            mouseGridY = mouseY / tilleWidth;
 
             if (state[SDL_SCANCODE_A]) {
                 map[mouseGridY * mapX + mouseGridX] = 1;
@@ -53,40 +37,70 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
             if (state[SDL_SCANCODE_F]) {
                 map[mouseGridY * mapX + mouseGridX] = 0;
             }
-            // Makes the map bigger
-            if (state[SDL_SCANCODE_I]) {
-                mapX++;
-                mapY++;
-                mapSize = mapX * mapY;
-                tilleWidth = HEIGHT / mapX;
-                clearMap(map, mapSize);
-            }
-            // Makes the map smaller
-            if (state[SDL_SCANCODE_O]) {
-                mapX--;
-                mapY--;
-                mapSize = mapX * mapY;
-                tilleWidth = HEIGHT / mapX;
-                clearMap(map, mapSize);
-            }
-
-            // Saves the map
-            if (state[SDL_SCANCODE_M]) {
-                saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
-                mapSize = mapX * mapY;
-                tilleWidth = HEIGHT / mapX;
-            }
-            // Loads the saved map
-            if (state[SDL_SCANCODE_N]) {
-                openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
-                mapSize = mapX * mapY;
-                tilleWidth = HEIGHT / mapX;
-            }
 
             // Clears the map
             if (state[SDL_SCANCODE_C]) {
                 clearMap(map, mapSize);
             }
+
+            if (state[SDL_SCANCODE_RETURN]) {
+                map[mouseGridY * mapX + mouseGridX] = currentWall;
+            }
+        }
+    }
+    else {
+        if (state[SDL_SCANCODE_RETURN]) {
+            if (saveButton.Check(mouseX, mouseY) == true) {
+                saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
+                mapSize = mapX * mapY;
+                tilleWidth = HEIGHT / mapX;
+            }
+
+            if (loadButton.Check(mouseX, mouseY) == true) {
+                openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
+                mapSize = mapX * mapY;
+                tilleWidth = HEIGHT / mapX;
+            }
+
+            if (wall1.Check(mouseX, mouseY) == true) {
+                currentWall = 1;
+            }
+            if (wall2.Check(mouseX, mouseY) == true) {
+                currentWall = 2;
+            }
+            if (wall3.Check(mouseX, mouseY) == true) {
+                currentWall = 3;
+            }
+        }
+
+        // Makes the map bigger
+        if (state[SDL_SCANCODE_I]) {
+            mapX++;
+            mapY++;
+            mapSize = mapX * mapY;
+            tilleWidth = HEIGHT / mapX;
+            clearMap(map, mapSize);
+        }
+        // Makes the map smaller
+        if (state[SDL_SCANCODE_O]) {
+            mapX--;
+            mapY--;
+            mapSize = mapX * mapY;
+            tilleWidth = HEIGHT / mapX;
+            clearMap(map, mapSize);
+        }
+
+        // Saves the map
+        if (state[SDL_SCANCODE_M]) {
+            saveMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
+            mapSize = mapX * mapY;
+            tilleWidth = HEIGHT / mapX;
+        }
+        // Loads the saved map
+        if (state[SDL_SCANCODE_N]) {
+            openMap(mapX, mapY, mapSize, map, tilleWidth, "map.dat");
+            mapSize = mapX * mapY;
+            tilleWidth = HEIGHT / mapX;
         }
     }
 }
