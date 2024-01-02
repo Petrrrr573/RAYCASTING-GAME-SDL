@@ -5,6 +5,7 @@
 #include "main.h"
 #include "game.h"
 #include "player.h"
+#include "enemy.h"
 #include "button.h"
 #include "map_editor.h"
 
@@ -41,12 +42,14 @@ int main(int argc, char** argv){
 
 	// GAME PART
 	Player player;
+	Enemy enemy;
 
 	game.MakeWindow("Raycaster", WIDTH, HEIGHT);
 	game.isRunning = true;
 
 	game.minimapTilleWidth = game.minimapWidth / game.mapX;
 	player.Update(game.renderer, game.minimapTilleWidth, game.mapX);
+	enemy.Update(game.renderer, game.minimapTilleWidth, game.mapX);
 
 
 	// Main loop
@@ -54,6 +57,7 @@ int main(int argc, char** argv){
 		game.HandleFps();
 
 		player.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map); // Movement, QUIT
+		enemy.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map); // Movement, QUIT
 		game.Input(game.isRunning);
 
 		SDL_RenderClear(game.renderer);
@@ -63,6 +67,7 @@ int main(int argc, char** argv){
 		game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		player.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
+		enemy.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 

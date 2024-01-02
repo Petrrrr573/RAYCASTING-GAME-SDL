@@ -27,6 +27,8 @@ public:
 	double pdx = cos(playerAngle) * playerSpeed;
 	double pdy = sin(playerAngle) * playerSpeed;
 
+	std::string imgName = "player.png";
+
 	SDL_Surface* playerSurface;
 	SDL_Texture* playerTexture;
 
