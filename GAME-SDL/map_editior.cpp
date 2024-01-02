@@ -1,7 +1,11 @@
 #include "map_editor.h"
 
 MapEditor::MapEditor(SDL_Renderer* renderer)
-    : saveButton(renderer, 900, 100, 1), loadButton(renderer, 1100, 100, 2), wall1(renderer, 900, 300, 3), wall2(renderer, 900, 375, 4), wall3(renderer, 900, 450, 5) {
+    : saveButton(renderer, 900, 100, 1), 
+    loadButton(renderer, 1100, 100, 2), 
+    wall1(renderer, 900, 300, 3), 
+    wall2(renderer, 900, 375, 4), 
+    wall3(renderer, 900, 450, 5) {
 }
 
 void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth, SDL_Renderer* renderer) {
@@ -11,8 +15,6 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
     wall1.Draw(renderer);
     wall2.Draw(renderer);
     wall3.Draw(renderer);
-
-    std::cout << currentWall << std::endl;
 
     SDL_Event event;
 
@@ -34,7 +36,7 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
             if (state[SDL_SCANCODE_D]) {
                 map[mouseGridY * mapX + mouseGridX] = 3;
             }
-            if (state[SDL_SCANCODE_F]) {
+            if (state[SDL_SCANCODE_BACKSPACE]) {
                 map[mouseGridY * mapX + mouseGridX] = 0;
             }
 
