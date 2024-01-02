@@ -1,8 +1,8 @@
 #pragma once
 #include "main.h"
+#include "player.h"
 
-// Player class
-class Player {
+class Enemy{
 public:
 	// Variables to store the player's position
 	double xPos;
@@ -27,13 +27,13 @@ public:
 	double pdx = cos(playerAngle) * playerSpeed;
 	double pdy = sin(playerAngle) * playerSpeed;
 
-	std::string imgName = "player.png";
+	std::string imgName = "enemy.png";
 
 	SDL_Surface* playerSurface;
 	SDL_Texture* playerTexture;
 
 
-	Player(int x, int y) {
+	Enemy(int x, int y) {
 		xPos = x;
 		yPos = y;
 	}
@@ -43,3 +43,4 @@ public:
 	void Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map);
 	void Draw(SDL_Renderer* renderer, int tilleWidth);
 };
+

@@ -1,9 +1,6 @@
-#include "player.h"
+#include "enemy.h"
 
-// Player class
-// Handles inputs
-
-void Player::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
+void Enemy::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
 	playerSurface = IMG_Load(imgName.c_str());
 	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
@@ -14,7 +11,7 @@ void Player::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
 	}
 }
 
-void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map) {
+void Enemy::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSize, std::vector<int>& map) {
 	if (currentFrame >= 32) {
 		currentFrame = 0;
 	}
@@ -32,7 +29,7 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 		isRunning = false;
 	}
 
-	if (state[SDL_SCANCODE_A]) {
+	if (state[SDL_SCANCODE_LEFT]) {
 		currentFrame += 1;
 		playerAngle -= radPerFrame;
 		if (playerAngle < 0) {
@@ -42,7 +39,7 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 		pdy = sin(playerAngle) * playerSpeed;
 	}
 
-	if (state[SDL_SCANCODE_D]) {
+	if (state[SDL_SCANCODE_RIGHT]) {
 		currentFrame -= 1;
 		playerAngle += radPerFrame;
 		if (playerAngle > 2 * PI) {
@@ -52,7 +49,7 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 		pdy = sin(playerAngle) * playerSpeed;
 	}
 
-	if (state[SDL_SCANCODE_W]) {
+	if (state[SDL_SCANCODE_UP]) {
 		if (map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
 			yPos += pdy;
 		}
@@ -61,7 +58,7 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 		}
 	}
 
-	if (state[SDL_SCANCODE_S]) {
+	if (state[SDL_SCANCODE_DOWN]) {
 		if (map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
 			yPos -= pdy;
 		}
@@ -71,7 +68,7 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 	}
 }
 
-void Player::Draw(SDL_Renderer* renderer, int tilleWidth) {
+void Enemy::Draw(SDL_Renderer* renderer, int tilleWidth) {
 
 	// Calculate the source rectangle based on the current frame
 	int srcX = round(currentFrame * playerWidth);
@@ -79,7 +76,7 @@ void Player::Draw(SDL_Renderer* renderer, int tilleWidth) {
 
 	// Set up the source and destination rectangles
 	SDL_Rect srcRect = { srcX, srcY, playerWidth, playerHeight };
-	SDL_Rect destRect = {xPos/50*tilleWidth, yPos/50*tilleWidth, 10*scale, 10*scale};
+	SDL_Rect destRect = { xPos / 50 * tilleWidth, yPos / 50 * tilleWidth, 10 * scale, 10 * scale };
 
 	// Render the player's current frame
 	SDL_RenderCopy(renderer, playerTexture, &srcRect, &destRect);

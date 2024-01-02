@@ -41,8 +41,8 @@ int main(int argc, char** argv){
 
 
 	// GAME PART
-	Player player;
-	Enemy enemy;
+	Player player(100,100);
+	Enemy enemy(200,200);
 
 	game.MakeWindow("Raycaster", WIDTH, HEIGHT);
 	game.isRunning = true;
