@@ -33,5 +33,5 @@ public:
 	void Input(bool& running);
 	float degToRad(float degrees);
 	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle);
-	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled);
+	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled, int eX, int eY);
 };

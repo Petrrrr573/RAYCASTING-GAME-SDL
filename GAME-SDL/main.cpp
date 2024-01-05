@@ -62,9 +62,9 @@ int main(int argc, char** argv){
 
 		SDL_RenderClear(game.renderer);
 
-		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
+		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled, enemy.xPos, enemy.yPos);
 
-		game.DrawMap(game.minimapTilleWidth); // Draws the map
+		//game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		player.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
 		enemy.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
