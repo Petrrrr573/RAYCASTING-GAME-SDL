@@ -109,7 +109,7 @@ double Game::distance(double playerX, double playerY, double rayX, double rayY, 
 	return distance;
 }
 
-void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled, int eX, int eY) {
+void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled, int eX, int eY, SDL_Texture* enemyTexture) {
 	double rayY = -1, rayX = -1;
 
 	double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
@@ -279,7 +279,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		}
 
 		verticalY = rayY, verticalX = rayX;
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		verticalDistance = distance(playerX, playerY, verticalX, verticalY, rayAngle, playerAngle);
 
 		// Get shorter distance
@@ -333,10 +332,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					else {
 						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 					}
-					if (r == 0 || r == 1599) {
-						SDL_RenderDrawLine(renderer, playerX/tilleWidth*minimapTilleWidth, playerY / tilleWidth * minimapTilleWidth, rayX / tilleWidth * minimapTilleWidth, rayY / tilleWidth * minimapTilleWidth);
-					}
+					SDL_RenderDrawLine(renderer, playerX / tilleWidth * minimapTilleWidth, playerY / tilleWidth * minimapTilleWidth, rayX / tilleWidth * minimapTilleWidth, rayY / tilleWidth * minimapTilleWidth);
 				}
+
 
 				// Calculate the ray direction relative to the player's view
 				float rayDirection = FOV * (0.5f * WIDTH_3D - (float)r) / (rays-1);
@@ -349,7 +347,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				nextColumn = WIDTH_3D;
 
 
-				double enemyHeight = tilleWidth/2 / (sqrt((playerX - enemyX) * (playerX - enemyX) + (playerY - enemyY) * (playerY - enemyY))) * playerPlaneDistance;
+				double enemyHeight = tilleWidth / (sqrt((playerX - enemyX) * (playerX - enemyX) + (playerY - enemyY) * (playerY - enemyY))) * playerPlaneDistance;
 
 
 				double wh = tilleWidth / finalDistance * playerPlaneDistance;
@@ -387,7 +385,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				if (prevColumn < currentColumn) {
 					SDL_Rect rect = { currentColumn + idk, lineO / 2, nextColumn - currentColumn, wh };
-					SDL_Rect enemyRect = {enemyColumn, enemyLineO / 2, 10, enemyHeight};
 					SDL_Rect floorRect = { currentColumn + idk, lineO / 2 + wh - 1, nextColumn - currentColumn, HEIGHT - lineO / 2 + wh + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
 						SDL_Rect srcRect;
@@ -438,7 +435,10 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						SDL_RenderFillRect(renderer, &floorRect);
 						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
 						if (abs(enemyDirection) < FOV / 2) {
-							SDL_RenderFillRect(renderer, &enemyRect);
+							SDL_Rect srcRect = { 0, 0, 50, 50};
+							SDL_Rect destRect = {enemyColumn-25, enemyLineO / 2, enemyHeight, enemyHeight };
+
+							SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
 						}
 					}
 				}

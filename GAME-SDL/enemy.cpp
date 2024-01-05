@@ -5,6 +5,10 @@ void Enemy::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
 	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
 
+	bodySurface = IMG_Load(imgBodyName.c_str());
+	bodyTexture = SDL_CreateTextureFromSurface(renderer, bodySurface);
+	SDL_FreeSurface(bodySurface);
+
 	scale = 16 / mapX;
 	if (scale <= 0) {
 		scale = 0.5;

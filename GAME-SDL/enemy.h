@@ -32,6 +32,11 @@ public:
 	SDL_Surface* playerSurface;
 	SDL_Texture* playerTexture;
 
+	std::string imgBodyName = "enemy-body.png";
+
+	SDL_Surface* bodySurface;
+	SDL_Texture* bodyTexture;
+
 
 	Enemy(int x, int y) {
 		xPos = x;
