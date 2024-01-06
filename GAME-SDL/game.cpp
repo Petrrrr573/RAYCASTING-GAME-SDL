@@ -382,9 +382,11 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				if (state[SDL_SCANCODE_F]) {
 					lineO += 200;
+					enemyLineO += 200;
 				}
 				if (state[SDL_SCANCODE_V]) {
 					lineO -= 200;
+					enemyLineO -= 200;
 				}
 
 				if (prevColumn < currentColumn) {
