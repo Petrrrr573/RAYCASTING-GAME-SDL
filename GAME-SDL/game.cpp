@@ -94,6 +94,10 @@ float Game::degToRad(float degrees) {
 	return degrees * PI / 180;
 }
 
+float Game::radToDeg(float degrees) {
+	return degrees * 180 / PI;
+}
+
 // Gets the distance of a ray
 double Game::distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle) {
 	double distance = 0;
@@ -150,9 +154,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	int wallY;
 
 
-	float enemyDirection = atan2(playerY - enemyY, playerX - enemyX) * 57.2957795 + 180;
+	float enemyDirection = radToDeg(atan2(playerY - enemyY, playerX - enemyX)) + 180;
 
-	enemyDirection -= playerAngle * 57.2957795;
+	enemyDirection -= radToDeg(playerAngle);
 
 	if (enemyDirection > 180) {
 		enemyDirection -= 360;
@@ -210,7 +214,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				my = int(floor(rayY / tilleWidth));
 			}
 			mx = int(floor(rayX / tilleWidth));
-			mp = my * mapX + mx;
+			mp = my * mapX + mx;	
 
 			// hit wall
 			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
@@ -434,7 +438,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
 						SDL_RenderFillRect(renderer, &floorRect);
 						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
-						if (abs(enemyDirection) < FOV / 2) {
+						if (abs(enemyDirection) < FOV / 2 + 20) {
 							SDL_Rect srcRect = { 0, 0, 50, 50};
 							SDL_Rect destRect = {enemyColumn-25, enemyLineO / 2, enemyHeight, enemyHeight };
 
