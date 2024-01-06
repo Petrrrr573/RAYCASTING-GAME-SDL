@@ -7,6 +7,7 @@ public:
 	int mapX = 16, mapY = 16, mapSize = mapX * mapY;
 
 	std::vector<int> map;
+	std::vector<std::vector<float>> rayHits;
 
 	int minimapWidth = 320;
 

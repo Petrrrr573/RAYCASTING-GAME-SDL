@@ -55,6 +55,23 @@ void Game::DrawMap(int tilleWidth) {
 		}
 	}
 
+	for (const auto& hit : rayHits) {
+		if (hit[0] == 1) {
+			SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
+		}
+		else if (hit[0] == 2) {
+			SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
+		}
+		else if (hit[0] == 3) {
+			SDL_SetRenderDrawColor(renderer, 170, 120, 120, 255);
+		}
+		else {
+			SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
+		}
+		SDL_RenderDrawLine(renderer, hit[3], hit[4], hit[1], hit[2]);
+	}
+	rayHits.clear();
+
 }
 
 // Limiting the FPS
@@ -324,21 +341,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				// hit wall
 				if (mp > 0 && mp < mapX * mapY) {
-					if (map[mp] == 1) {
-						SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
-					}
-					else if (map[mp] == 2) {
-						SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
-					}
-					else if (map[mp] == 3) {
-						SDL_SetRenderDrawColor(renderer, 150, 100, 100, 255);
-					}
-					else {
-						SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
-					}
-					SDL_RenderDrawLine(renderer, playerX / tilleWidth * minimapTilleWidth, playerY / tilleWidth * minimapTilleWidth, rayX / tilleWidth * minimapTilleWidth, rayY / tilleWidth * minimapTilleWidth);
+					rayHits.push_back({float(map[mp]), float(rayX / tilleWidth * minimapTilleWidth), float(rayY / tilleWidth * minimapTilleWidth), float(playerX / tilleWidth * minimapTilleWidth), float(playerY / tilleWidth * minimapTilleWidth)});
 				}
-
+				 
 
 				// Calculate the ray direction relative to the player's view
 				float rayDirection = FOV * (0.5f * WIDTH_3D - (float)r) / (rays-1);
