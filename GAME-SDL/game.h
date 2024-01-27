@@ -1,5 +1,6 @@
 #pragma once
 #include "main.h"
+#include "stripe.h"
 
 // game Class
 class Game {

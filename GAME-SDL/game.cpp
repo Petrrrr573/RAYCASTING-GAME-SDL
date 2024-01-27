@@ -2,7 +2,6 @@
 #include <SDL_image.h>
 
 #include "game.h"
-#include "stripe.h"
 
 // game Class
 void Game::MakeWindow(const char* name, int width, int height) {
