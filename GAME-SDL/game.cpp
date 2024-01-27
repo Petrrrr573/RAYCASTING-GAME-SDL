@@ -138,8 +138,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	double verticalY = 0, verticalX = 0; // x, y possitions of vertical rays
 	double horizontalDistance = 0, verticalDistance = 0; // distances of final rays
 
-	double finalDistance = 0; // Final distance
-
 	double xOffset = 0, yOffset = 0;
 
 	double playerX = xPos + pWidthScaled / 2;
@@ -168,10 +166,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	short currentColumn = 0;
 	short nextColumn = 0;
 
-	int wallX;
-	int wallY;
-
-
 	float enemyDirection = radToDeg(atan2(playerY - enemyY, playerX - enemyX)) + 180;
 
 	enemyDirection -= radToDeg(playerAngle);
@@ -188,7 +182,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	double enemyColumn = 1600 - static_cast<short>(round(WIDTH_3D * (0.5f - enemyProjectionPosition)));
 
 	for (int r = 0; r < rays; r++) {
-		bool horizontalHit;
+		Stripe stripe(renderer, wallTexture);
 		if (rayAngle < 0) {
 			rayAngle += 2 * PI;
 		}
@@ -307,20 +301,20 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		if (horizontalDistance > verticalDistance) {
 			rayX = verticalX;
 			rayY = verticalY;
-			finalDistance = verticalDistance;
-			horizontalHit = false;
+			stripe.distance = verticalDistance;
+			stripe.horizontalHit = false;
 		}
 		else if (horizontalDistance < verticalDistance) {
 			rayX = horizontalX;
 			rayY = horizontalY;
-			finalDistance = horizontalDistance;
-			horizontalHit = true;
+			stripe.distance = horizontalDistance;
+			stripe.horizontalHit = true;
 		}
 
 		//draws the rays on the minimap
 		if (rayX >= 0 && rayX <= WIDTH/2) {
 			if (rayY >= 0 && rayY <= HEIGHT) {
-				if (horizontalHit == true) {
+				if (stripe.horizontalHit == true) {
 					if (rayAngle > PI) {
 						my = int(floor((rayY - 1) / tilleWidth));
 					}
@@ -360,7 +354,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				double enemyHeight = tilleWidth / (sqrt((playerX - enemyX) * (playerX - enemyX) + (playerY - enemyY) * (playerY - enemyY))) * playerPlaneDistance;
 
 
-				double wh = tilleWidth / finalDistance * playerPlaneDistance;
+				stripe.height = tilleWidth / stripe.distance * playerPlaneDistance;
 
 				float idk = 0;
 				if (currentColumn < 0) {
@@ -377,7 +371,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					nextColumn = static_cast<short>(round(WIDTH_3D * (0.5f - nextRayProjectionPosition)));
 				}
 
-				lineO = HEIGHT - wh / 1.5;
+				stripe.lineO = HEIGHT - stripe.height / 1.5;
 				float enemyLineO = HEIGHT - enemyHeight/1.5;
 
 				SDL_Event event;
@@ -387,47 +381,26 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				SDL_PollEvent(&event);
 
 				if (state[SDL_SCANCODE_F]) {
-					lineO += 200;
+					stripe.lineO += 200;
 					enemyLineO += 200;
 				}
 				if (state[SDL_SCANCODE_V]) {
-					lineO -= 200;
+					stripe.lineO -= 200;
 					enemyLineO -= 200;
 				}
 
 				if (prevColumn < currentColumn) {
-					SDL_Rect floorRect = { currentColumn + idk, lineO / 2 + wh - 1, nextColumn - currentColumn, HEIGHT - lineO / 2 + wh + 1 };
+					SDL_Rect floorRect = { currentColumn + idk, stripe.lineO / 2 + stripe.height - 1, nextColumn - currentColumn, HEIGHT - stripe.lineO / 2 + stripe.height + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
-						SDL_Rect wSrcRect;
-						SDL_Rect wDestRect;
-						int srcX;
-						int srcY = 0;
-						wallX = rayX - floor(rayX / tilleWidth) * tilleWidth;
-						wallY = rayY - floor(rayY / tilleWidth) * tilleWidth;
-						if (horizontalHit) {
-							srcX = floor(wallX);
-							if (rayAngle < PI) {
-								srcX = 49 - srcX;
-							}
-						}
-						else {
-							srcX = floor(wallY);;
-							if (rayAngle > PI2 && rayAngle < PI3) {
-								srcX = 49 - srcX;
-							}
-						}
 
-						srcX += (map[mp] - 1) * 50;
-						wSrcRect = { srcX, srcY, 1, 50 };
-						wDestRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh) };
-
+						stripe.Set(tilleWidth, map, mp, rayX, rayY, rayAngle, currentColumn, nextColumn, idk);
 						//Drawing floor
 						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
 						SDL_RenderFillRect(renderer, &floorRect);
 						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
 
-						if (finalDistance < sqrt((playerX - enemyX) * (playerX - enemyX)) * cos(rayAngle - playerAngle)) {
-							SDL_RenderCopy(renderer, wallTexture, &wSrcRect, &wDestRect);
+						if (stripe.distance < sqrt((playerX - enemyX) * (playerX - enemyX)) * cos(rayAngle - playerAngle)) {
+							stripe.Draw(renderer);
 						}
 						else {
 							if (abs(enemyDirection) < FOV) {
@@ -436,7 +409,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 								SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
 							}
-							SDL_RenderCopy(renderer, wallTexture, &wSrcRect, &wDestRect);
+							stripe.Draw(renderer);
 						}
 					}
 				}
