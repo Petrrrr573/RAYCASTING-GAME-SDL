@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 
 #include "game.h"
+#include "stripe.h"
 
 // game Class
 void Game::MakeWindow(const char* name, int width, int height) {
@@ -68,7 +69,7 @@ void Game::DrawMap(int tilleWidth) {
 		else {
 			SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 		}
-		SDL_RenderDrawLine(renderer, hit[3], hit[4], hit[1], hit[2]);
+		SDL_RenderDrawLine(renderer, hit[3] / this->tilleWidth * minimapTilleWidth, hit[4] / this->tilleWidth * minimapTilleWidth, hit[1] / this->tilleWidth * minimapTilleWidth, hit[2] / this->tilleWidth * minimapTilleWidth);
 	}
 	rayHits.clear();
 
@@ -341,7 +342,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				// hit wall
 				if (mp > 0 && mp < mapX * mapY) {
-					rayHits.push_back({float(map[mp]), float(rayX / tilleWidth * minimapTilleWidth), float(rayY / tilleWidth * minimapTilleWidth), float(playerX / tilleWidth * minimapTilleWidth), float(playerY / tilleWidth * minimapTilleWidth)});
+					rayHits.push_back({float(map[mp]), float(rayX), float(rayY), float(playerX), float(playerY)});
 				}
 				 
 
@@ -395,11 +396,10 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				if (prevColumn < currentColumn) {
-					SDL_Rect rect = { currentColumn + idk, lineO / 2, nextColumn - currentColumn, wh };
 					SDL_Rect floorRect = { currentColumn + idk, lineO / 2 + wh - 1, nextColumn - currentColumn, HEIGHT - lineO / 2 + wh + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
-						SDL_Rect srcRect;
-						SDL_Rect destRect;
+						SDL_Rect wSrcRect;
+						SDL_Rect wDestRect;
 						int srcX;
 						int srcY = 0;
 						wallX = rayX - floor(rayX / tilleWidth) * tilleWidth;
@@ -418,38 +418,25 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						}
 
 						srcX += (map[mp] - 1) * 50;
-						srcRect = { srcX, srcY, 1, 50 };
-						destRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh) };
-						SDL_RenderCopy(renderer, wallTexture, &srcRect, &destRect);
-						/*if (map[mp] == 1) {
-							if (horizontalHit == true) {
-								SDL_SetRenderDrawColor(renderer, WALL_COLOR_1);
-							}
-							else if (horizontalHit == false) {
-								SDL_SetRenderDrawColor(renderer, WALL_COLOR_1_2);
-							}
-						}
-						else if (map[mp] == 2) {
-							if (horizontalHit == true) {
-								SDL_SetRenderDrawColor(renderer, WALL_COLOR_2);
-							}
-							else if (horizontalHit == false) {
-								SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
-							}
-						}
-						else if (map[mp] == 3) {
-							SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
-						}*/
-						//SDL_RenderFillRect(renderer, &rect);
+						wSrcRect = { srcX, srcY, 1, 50 };
+						wDestRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(wh) };
+
 						//Drawing floor
 						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
 						SDL_RenderFillRect(renderer, &floorRect);
 						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
-						if (abs(enemyDirection) < FOV / 2 + 20) {
-							SDL_Rect srcRect = { 0, 0, 50, 50};
-							SDL_Rect destRect = {enemyColumn-25, enemyLineO / 2, enemyHeight, enemyHeight };
 
-							SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
+						if (finalDistance < sqrt((playerX - enemyX) * (playerX - enemyX)) * cos(rayAngle - playerAngle)) {
+							SDL_RenderCopy(renderer, wallTexture, &wSrcRect, &wDestRect);
+						}
+						else {
+							if (abs(enemyDirection) < FOV) {
+								SDL_Rect srcRect = { 0, 0, 50, 50 };
+								SDL_Rect destRect = { enemyColumn - 25, enemyLineO / 2, enemyHeight, enemyHeight };
+
+								SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
+							}
+							SDL_RenderCopy(renderer, wallTexture, &wSrcRect, &wDestRect);
 						}
 					}
 				}

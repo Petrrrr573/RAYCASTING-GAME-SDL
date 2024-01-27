@@ -6,6 +6,7 @@
 #include "game.h"
 #include "player.h"
 #include "enemy.h"
+#include "stripe.h"
 #include "button.h"
 #include "map_editor.h"
 
