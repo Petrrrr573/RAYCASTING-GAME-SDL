@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <vector>
+#include <algorithm> 
 #include <fstream>
 
 #define WIDTH 1600

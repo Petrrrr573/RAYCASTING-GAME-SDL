@@ -10,6 +10,8 @@ public:
 	std::vector<int> map;
 	std::vector<std::vector<float>> rayHits;
 
+	std::vector<Stripe> stripes;
+
 	int minimapWidth = 320;
 
 	bool isRunning;

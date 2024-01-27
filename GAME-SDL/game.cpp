@@ -131,6 +131,7 @@ double Game::distance(double playerX, double playerY, double rayX, double rayY, 
 }
 
 void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled, int eX, int eY, SDL_Texture* enemyTexture) {
+	stripes.clear();
 	double rayY = -1, rayX = -1;
 
 	double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
@@ -144,6 +145,11 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	int enemyX = eX + pWidthScaled / 2;
 	int enemyY = eY + pWidthScaled / 2;
+
+	SDL_Rect srcRect;
+	SDL_Rect destRect;
+
+	double eDistance;
 
 	double dx = 0, dy = 0; // x, y possitions in a tille
 
@@ -350,7 +356,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				nextColumn = WIDTH_3D;
 
 
-				double enemyHeight = tilleWidth / (sqrt((playerX - enemyX) * (playerX - enemyX) + (playerY - enemyY) * (playerY - enemyY))) * playerPlaneDistance;
+				eDistance = distance(playerX, playerY, enemyX, enemyY, rayAngle, playerAngle);
+				double enemyHeight = tilleWidth / eDistance * playerPlaneDistance;
 
 
 				stripe.height = tilleWidth / stripe.distance * playerPlaneDistance;
@@ -380,12 +387,12 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				SDL_PollEvent(&event);
 
 				if (state[SDL_SCANCODE_F]) {
-					stripe.lineO += 200;
-					enemyLineO += 200;
+					stripe.lineO += 500;
+					enemyLineO += 500;
 				}
 				if (state[SDL_SCANCODE_V]) {
-					stripe.lineO -= 200;
-					enemyLineO -= 200;
+					stripe.lineO -= 500;
+					enemyLineO -= 5	00;
 				}
 
 				if (prevColumn < currentColumn) {
@@ -398,22 +405,30 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						SDL_RenderFillRect(renderer, &floorRect);
 						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
 
-						if (stripe.distance < sqrt((playerX - enemyX) * (playerX - enemyX)) * cos(rayAngle - playerAngle)) {
-							stripe.Draw(renderer);
-						}
-						else {
-							if (abs(enemyDirection) < FOV) {
-								SDL_Rect srcRect = { 0, 0, 50, 50 };
-								SDL_Rect destRect = { enemyColumn - 25, enemyLineO / 2, enemyHeight, enemyHeight };
-
-								SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
-							}
-							stripe.Draw(renderer);
-						}
+						srcRect = { 0, 0, 50, 50 };
+						destRect = { int(enemyColumn - 25), int(enemyLineO / 2), int(enemyHeight), int(enemyHeight)};
 					}
 				}
 			}
 		}
+		stripes.push_back(stripe);
 		rayAngle += degToRad(FOV) / rays;
+	}
+
+	std::sort(stripes.begin(), stripes.end(), [](const Stripe& a, const Stripe& b) {
+		return a.distance > b.distance;
+	});
+
+	for (int i = 0; i < stripes.size(); i++) {
+		if (stripes[i].distance < eDistance) {
+			stripes[i].Draw(renderer);
+		}
+		else {
+			if (abs(enemyDirection) < FOV) {
+
+				SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
+			}
+			stripes[i].Draw(renderer);
+		}
 	}
 }
