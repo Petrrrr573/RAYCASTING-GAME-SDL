@@ -415,7 +415,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	}
 
 	srcRect = { 0, 0, 50, 50 };
-	destRect = { int(enemyColumn - 25), int(enemyLineO / 2), int(enemyHeight), int(enemyHeight) };
+	destRect = { int(enemyColumn - enemyHeight/2), int(enemyLineO / 2), int(enemyHeight), int(enemyHeight) };
 
 	std::sort(stripes.begin(), stripes.end(), [](const Stripe& a, const Stripe& b) {
 		return a.distance > b.distance;
