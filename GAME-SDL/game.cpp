@@ -174,6 +174,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	float enemyDirection = radToDeg(atan2(playerY - enemyY, playerX - enemyX)) + 180;
 
 	enemyDirection -= radToDeg(playerAngle);
+	double enemyHeight;
+	float enemyLineO;
 
 	if (enemyDirection > 180) {
 		enemyDirection -= 360;
@@ -356,8 +358,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				nextColumn = WIDTH_3D;
 
 
-				eDistance = distance(playerX, playerY, enemyX, enemyY, rayAngle, playerAngle);
-				double enemyHeight = tilleWidth / eDistance * playerPlaneDistance;
+				eDistance = distance(playerX, playerY, enemyX, enemyY, playerAngle, playerAngle);
+				enemyHeight = tilleWidth / eDistance * playerPlaneDistance;
 
 
 				stripe.height = tilleWidth / stripe.distance * playerPlaneDistance;
@@ -378,7 +380,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				stripe.lineO = HEIGHT - stripe.height / 1.5;
-				float enemyLineO = HEIGHT - enemyHeight/1.5;
+				enemyLineO = HEIGHT - enemyHeight / 1.5;
 
 				SDL_Event event;
 
@@ -392,7 +394,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 				if (state[SDL_SCANCODE_V]) {
 					stripe.lineO -= 500;
-					enemyLineO -= 5	00;
+					enemyLineO -= 500;
 				}
 
 				if (prevColumn < currentColumn) {
@@ -404,9 +406,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
 						SDL_RenderFillRect(renderer, &floorRect);
 						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
-
-						srcRect = { 0, 0, 50, 50 };
-						destRect = { int(enemyColumn - 25), int(enemyLineO / 2), int(enemyHeight), int(enemyHeight)};
 					}
 				}
 			}
@@ -414,6 +413,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		stripes.push_back(stripe);
 		rayAngle += degToRad(FOV) / rays;
 	}
+
+	srcRect = { 0, 0, 50, 50 };
+	destRect = { int(enemyColumn - 25), int(enemyLineO / 2), int(enemyHeight), int(enemyHeight) };
 
 	std::sort(stripes.begin(), stripes.end(), [](const Stripe& a, const Stripe& b) {
 		return a.distance > b.distance;

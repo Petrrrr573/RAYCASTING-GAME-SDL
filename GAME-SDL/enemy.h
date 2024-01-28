@@ -32,7 +32,7 @@ public:
 	SDL_Surface* playerSurface;
 	SDL_Texture* playerTexture;
 
-	std::string imgBodyName = "enemy-body.png";
+	std::string imgBodyName = "ghost.png";
 
 	SDL_Surface* bodySurface;
 	SDL_Texture* bodyTexture;
