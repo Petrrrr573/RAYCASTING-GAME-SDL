@@ -1,6 +1,7 @@
 #pragma once
 #include "main.h"
 #include "stripe.h"
+#include "enemy.h"
 
 // game Class
 class Game {
@@ -11,6 +12,7 @@ public:
 	std::vector<std::vector<float>> rayHits;
 
 	std::vector<Stripe> stripes;
+	std::vector<Enemy> enemies;
 
 	int minimapWidth = 320;
 
@@ -40,5 +42,5 @@ public:
 	float degToRad(float degrees);
 	float radToDeg(float degrees);
 	double distance(double playerX, double playerY, double rayX, double rayY, double rayAngle, double playerAngle);
-	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled, int eX, int eY, SDL_Texture* enemyTexture);
+	void raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled);
 };

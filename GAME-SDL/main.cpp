@@ -43,14 +43,20 @@ int main(int argc, char** argv){
 
 	// GAME PART
 	Player player(100,100);
-	Enemy enemy(200,200);
+	Enemy enemy(200,200, 0);
+	Enemy enemy2(200, 300, 1);
+	game.enemies.push_back(enemy);
+	game.enemies.push_back(enemy2);
 
 	game.MakeWindow("Raycaster", WIDTH, HEIGHT);
 	game.isRunning = true;
 
 	game.minimapTilleWidth = game.minimapWidth / game.mapX;
 	player.Update(game.renderer, game.minimapTilleWidth, game.mapX);
-	enemy.Update(game.renderer, game.minimapTilleWidth, game.mapX);
+
+	for (Enemy& e : game.enemies) {
+		e.Update(game.renderer, game.minimapTilleWidth, game.mapX);
+	}
 
 
 	// Main loop
@@ -58,17 +64,23 @@ int main(int argc, char** argv){
 		game.HandleFps();
 
 		player.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map); // Movement, QUIT
-		enemy.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map); // Movement, QUIT
+		for (Enemy& e : game.enemies) {
+			e.Input(game.isRunning, game.tilleWidth, game.mapX, game.mapY, game.mapSize, game.map); // Movement, QUIT
+		}
 		game.Input(game.isRunning);
+
 
 		SDL_RenderClear(game.renderer);
 
-		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled, enemy.xPos, enemy.yPos, enemy.bodyTexture);
+		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
 
 		game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		player.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
-		enemy.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
+
+		for (Enemy& e : game.enemies) {
+			e.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
+		}
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 

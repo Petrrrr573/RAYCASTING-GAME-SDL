@@ -33,7 +33,7 @@ void Enemy::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSi
 		isRunning = false;
 	}
 
-	if (state[SDL_SCANCODE_LEFT]) {
+	if (state[left]) {
 		currentFrame += 1;
 		playerAngle -= radPerFrame;
 		if (playerAngle < 0) {
@@ -43,7 +43,7 @@ void Enemy::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSi
 		pdy = sin(playerAngle) * playerSpeed;
 	}
 
-	if (state[SDL_SCANCODE_RIGHT]) {
+	if (state[right]) {
 		currentFrame -= 1;
 		playerAngle += radPerFrame;
 		if (playerAngle > 2 * PI) {
@@ -53,7 +53,7 @@ void Enemy::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSi
 		pdy = sin(playerAngle) * playerSpeed;
 	}
 
-	if (state[SDL_SCANCODE_UP]) {
+	if (state[up]) {
 		if (map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos + pdy) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos + pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
 			yPos += pdy;
 		}
@@ -62,7 +62,7 @@ void Enemy::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapSi
 		}
 	}
 
-	if (state[SDL_SCANCODE_DOWN]) {
+	if (state[down]) {
 		if (map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0 && map[int((floor(yPos - pdy) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos + pWidthScaled) / tilleWidth))] == 0 && map[int((floor(yPos - pdy + pWidthScaled) / tilleWidth)) * mapX + int(floor((xPos) / tilleWidth))] == 0) {
 			yPos -= pdy;
 		}

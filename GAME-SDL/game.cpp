@@ -130,7 +130,7 @@ double Game::distance(double playerX, double playerY, double rayX, double rayY, 
 	return distance;
 }
 
-void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled, int eX, int eY, SDL_Texture* enemyTexture) {
+void Game::raycasting(double xPos, double yPos, double playerAngle, int& currentFrame, float pWidthScaled) {
 	stripes.clear();
 	double rayY = -1, rayX = -1;
 
@@ -142,14 +142,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	double playerX = xPos + pWidthScaled / 2;
 	double playerY = yPos + pWidthScaled / 2;
-
-	int enemyX = eX + pWidthScaled / 2;
-	int enemyY = eY + pWidthScaled / 2;
-
-	SDL_Rect srcRect;
-	SDL_Rect destRect;
-
-	double eDistance;
 
 	double dx = 0, dy = 0; // x, y possitions in a tille
 
@@ -171,22 +163,30 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	short currentColumn = 0;
 	short nextColumn = 0;
 
-	float enemyDirection = radToDeg(atan2(playerY - enemyY, playerX - enemyX)) + 180;
+	for (Enemy& e : enemies) {
+		e.centeredXPos = e.xPos + e.pWidthScaled / 2;
+		e.centeredYPos = e.yPos + e.pWidthScaled / 2;
 
-	enemyDirection -= radToDeg(playerAngle);
-	double enemyHeight;
-	float enemyLineO;
+		e.direction = radToDeg(atan2(playerY - e.centeredYPos, playerX - e.centeredXPos)) + 180;
 
-	if (enemyDirection > 180) {
-		enemyDirection -= 360;
+		e.direction -= radToDeg(playerAngle);
+
+		if (e.direction > 180) {
+			e.direction -= 360;
+		}
+		if (e.direction < -180) {
+			e.direction += 360;
+		}
+
+		e.projectionPosition = 0.5f * tan(degToRad(e.direction)) / tan(0.5f * degToRad(FOV));
+
+		e.columnPos = 1600 - static_cast<short>(round(WIDTH_3D * (0.5f - e.projectionPosition)));
+
+		e.distance = distance(playerX, playerY, e.centeredXPos, e.centeredYPos, playerAngle, playerAngle);
+		e.height = tilleWidth / e.distance * playerPlaneDistance;
+
+		e.lineO = HEIGHT - e.height / 1.5;
 	}
-	if (enemyDirection < -180) {
-		enemyDirection += 360;
-	}
-
-	float enemyProjectionPosition = 0.5f * tan(degToRad(enemyDirection)) / tan(0.5f * degToRad(FOV));
-
-	double enemyColumn = 1600 - static_cast<short>(round(WIDTH_3D * (0.5f - enemyProjectionPosition)));
 
 	for (int r = 0; r < rays; r++) {
 		Stripe stripe(renderer, wallTexture);
@@ -357,11 +357,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				currentColumn = static_cast<short>(round(WIDTH_3D * (0.5f - rayProjectionPosition)));
 				nextColumn = WIDTH_3D;
 
-
-				eDistance = distance(playerX, playerY, enemyX, enemyY, playerAngle, playerAngle);
-				enemyHeight = tilleWidth / eDistance * playerPlaneDistance;
-
-
 				stripe.height = tilleWidth / stripe.distance * playerPlaneDistance;
 
 				float idk = 0;
@@ -380,7 +375,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 
 				stripe.lineO = HEIGHT - stripe.height / 1.5;
-				enemyLineO = HEIGHT - enemyHeight / 1.5;
 
 				SDL_Event event;
 
@@ -390,22 +384,21 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				if (state[SDL_SCANCODE_F]) {
 					stripe.lineO += 500;
-					enemyLineO += 500;
+					for (int i = 0; i < enemies.size(); ++i) {
+						enemies[i].lineO += 500;;
+					}
 				}
 				if (state[SDL_SCANCODE_V]) {
 					stripe.lineO -= 500;
-					enemyLineO -= 500;
+					for (int i = 0; i < enemies.size(); ++i) {
+						enemies[i].lineO -= 500;;
+					}
 				}
 
 				if (prevColumn < currentColumn) {
-					SDL_Rect floorRect = { currentColumn + idk, stripe.lineO / 2 + stripe.height - 1, nextColumn - currentColumn, HEIGHT - stripe.lineO / 2 + stripe.height + 1 };
 					if (mp > 0 && mp < mapX * mapY) {
 
 						stripe.Set(tilleWidth, map, mp, rayX, rayY, rayAngle, currentColumn, nextColumn, idk);
-						//Drawing floor
-						SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
-						SDL_RenderFillRect(renderer, &floorRect);
-						SDL_SetRenderDrawColor(renderer, 255,0,0,255);
 					}
 				}
 			}
@@ -414,23 +407,38 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		rayAngle += degToRad(FOV) / rays;
 	}
 
-	srcRect = { 0, 0, 50, 50 };
-	destRect = { int(enemyColumn - enemyHeight/2), int(enemyLineO / 2), int(enemyHeight), int(enemyHeight) };
+	for (int i = 0; i < enemies.size(); ++i) {
+		enemies[i].srcRect = { 0, 0, 50, 50 };
+		enemies[i].destRect = { int(enemies[i].columnPos - enemies[i].height / 2), int(enemies[i].lineO / 2), int(enemies[i].height), int(enemies[i].height) };
+	}
 
 	std::sort(stripes.begin(), stripes.end(), [](const Stripe& a, const Stripe& b) {
 		return a.distance > b.distance;
 	});
 
-	for (int i = 0; i < stripes.size(); i++) {
-		if (stripes[i].distance < eDistance) {
-			stripes[i].Draw(renderer);
-		}
-		else {
-			if (abs(enemyDirection) < FOV) {
+	std::sort(enemies.begin(), enemies.end(), [](const Enemy& a, const Enemy& b) {
+		return a.distance > b.distance;
+	});
 
-				SDL_RenderCopy(renderer, enemyTexture, &srcRect, &destRect);
+	int enemyCount = 0;
+	for (int i = 0; i < stripes.size(); i++) {
+		//Drawing floor
+		SDL_Rect floorRect = {stripes[i].columnPos, stripes[i].lineO / 2 + stripes[i].height - 1, stripes[i].width, HEIGHT - stripes[i].lineO / 2 + stripes[i].height + 1 };
+		SDL_SetRenderDrawColor(renderer, FLOOR_COLOR);
+		SDL_RenderFillRect(renderer, &floorRect);
+
+
+		while (enemyCount < enemies.size() && stripes[i].distance < enemies[enemyCount].distance) {
+			if (abs(enemies[enemyCount].direction) < FOV) {
+				SDL_RenderCopy(renderer, enemies[enemyCount].bodyTexture, &enemies[enemyCount].srcRect, &enemies[enemyCount].destRect);
 			}
-			stripes[i].Draw(renderer);
+			enemyCount++;
+		}
+		stripes[i].Draw(renderer);
+	}
+	for (int e = enemyCount; e < enemies.size(); e++) {
+		if (abs(enemies[e].direction) < FOV) {
+			SDL_RenderCopy(renderer, enemies[e].bodyTexture, &enemies[e].srcRect, &enemies[e].destRect);
 		}
 	}
 }

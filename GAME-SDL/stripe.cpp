@@ -6,6 +6,8 @@ void Stripe::Set(int tilleWidth, std::vector<int>& map, int mp, int rayX, int ra
 	int srcY = 0;
 	wallX = rayX - floor(rayX / tilleWidth) * tilleWidth;
 	wallY = rayY - floor(rayY / tilleWidth) * tilleWidth;
+	width = nextColumn - currentColumn;
+	columnPos = currentColumn + idk;
 	if (horizontalHit) {
 		srcX = floor(wallX);
 		if (rayAngle < PI) {
@@ -21,7 +23,7 @@ void Stripe::Set(int tilleWidth, std::vector<int>& map, int mp, int rayX, int ra
 
 	srcX += (map[mp] - 1) * 50;
 	wSrcRect = { srcX, srcY, 1, 50 };
-	wDestRect = { int(currentColumn + idk), int(lineO / 2), nextColumn - currentColumn, int(height) };
+	wDestRect = { int(columnPos), int(lineO / 2), int(width), int(height) };
 }
 
 void Stripe::Draw(SDL_Renderer* renderer) {

@@ -9,6 +9,8 @@ public:
 	double distance;
 	int lineO;
 	double height;
+	double width;
+	float columnPos;
 	bool horizontalHit = true;
 
 	int wallX, wallY;
