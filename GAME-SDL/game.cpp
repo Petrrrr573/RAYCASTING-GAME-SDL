@@ -43,6 +43,10 @@ void Game::DrawMap(int tilleWidth) {
 				SDL_SetRenderDrawColor(renderer, 150, 100, 100, 255);
 				SDL_RenderFillRect(renderer, &rect);
 				break;
+			case 4:
+				SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+				SDL_RenderFillRect(renderer, &rect);
+				break;
 			}
 
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -64,6 +68,9 @@ void Game::DrawMap(int tilleWidth) {
 		}
 		else if (hit[0] == 3) {
 			SDL_SetRenderDrawColor(renderer, 170, 120, 120, 255);
+		}
+		else if (hit[0] == 4) {
+			SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
 		}
 		else {
 			SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);

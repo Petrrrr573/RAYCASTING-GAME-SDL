@@ -27,6 +27,8 @@ public:
 	double pdx = cos(playerAngle) * playerSpeed;
 	double pdy = sin(playerAngle) * playerSpeed;
 
+	double lookingPos;
+
 	std::string imgName = "player.png";
 
 	SDL_Surface* playerSurface;

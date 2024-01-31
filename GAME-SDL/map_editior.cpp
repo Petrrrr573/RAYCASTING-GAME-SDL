@@ -5,16 +5,21 @@ MapEditor::MapEditor(SDL_Renderer* renderer)
     loadButton(renderer, 1100, 100, 2), 
     wall1(renderer, 900, 300, 3), 
     wall2(renderer, 900, 375, 4), 
-    wall3(renderer, 900, 450, 5) {
+    wall3(renderer, 900, 450, 5),
+    wall4(renderer, 900, 525, 6) {
+
+    buttons.push_back(saveButton);
+    buttons.push_back(loadButton);
+    buttons.push_back(wall1);
+    buttons.push_back(wall2);
+    buttons.push_back(wall3);
+    buttons.push_back(wall4);
 }
 
 void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map, int& tilleWidth, SDL_Renderer* renderer) {
-    saveButton.Draw(renderer);
-    loadButton.Draw(renderer);
-
-    wall1.Draw(renderer);
-    wall2.Draw(renderer);
-    wall3.Draw(renderer);
+    for (Button& button : buttons) {
+        button.Draw(renderer);
+   }
 
     SDL_Event event;
 
@@ -72,6 +77,9 @@ void MapEditor::update(int& mapX, int& mapY, int& mapSize, std::vector<int>& map
             }
             if (wall3.Check(mouseX, mouseY) == true) {
                 currentWall = 3;
+            }
+            if (wall4.Check(mouseX, mouseY) == true) {
+                currentWall = 4;
             }
         }
 

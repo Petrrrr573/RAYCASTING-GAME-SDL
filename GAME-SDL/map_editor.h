@@ -7,12 +7,15 @@ class MapEditor {
 	public: 
 		bool isRunning;
 
+		std::vector<Button> buttons;
+
 		Button saveButton;
 		Button loadButton;
 
 		Button wall1;
 		Button wall2;
 		Button wall3;
+		Button wall4;
 
 		MapEditor(SDL_Renderer* renderer);
 

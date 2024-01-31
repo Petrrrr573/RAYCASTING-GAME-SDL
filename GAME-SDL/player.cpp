@@ -69,6 +69,12 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 			xPos -= pdx;
 		}
 	}
+	lookingPos = floor((yPos+pWidthScaled/2 + pdy*10)/tilleWidth) * mapX + floor((xPos + pWidthScaled / 2 + pdx*10)/tilleWidth);
+	if (map[lookingPos] == 4) {
+		if (state[SDL_SCANCODE_E]) {
+			map[lookingPos] = 0;
+		}
+	}
 }
 
 void Player::Draw(SDL_Renderer* renderer, int tilleWidth) {

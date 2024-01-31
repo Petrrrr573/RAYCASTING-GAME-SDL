@@ -25,7 +25,7 @@ public:
 			_h = 100;
 			srcRect = { (type - 1) * _w, 0, _w, _h };
 			break;
-		case 3: case 4: case 5:
+		case 3: case 4: case 5: case 6:
 			_w = 50;
 			_h = 50;
 			srcRect = { (type - 3) * _w, 100, _w, _h };
