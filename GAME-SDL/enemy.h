@@ -9,6 +9,9 @@ public:
 	double yPos;
 	double playerAngle;
 	double distance;
+	float maxDistance = MAXVISIBLEDISTANCE;
+	Uint8 originalR, originalG, originalB;
+	float darknessFactor;
 	double height;
 	double lineO;
 	double centeredXPos, centeredYPos;

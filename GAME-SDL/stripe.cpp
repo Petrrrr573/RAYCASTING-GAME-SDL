@@ -33,5 +33,25 @@ void Stripe::Set(int tilleWidth, std::vector<int>& map, int mp, int rayX, int ra
 }
 
 void Stripe::Draw(SDL_Renderer* renderer) {
+	darknessFactor = 1.0f - std::min(1.0f, static_cast<float>(distance) / maxDistance);
+
+	SDL_GetTextureColorMod(wallTexture, &originalR, &originalG, &originalB);
+
+	 // Calculate color modulation based on darkness factor
+	Uint8 r = static_cast<Uint8>(originalR * darknessFactor);
+	Uint8 g = static_cast<Uint8>(originalG * darknessFactor);
+	Uint8 b = static_cast<Uint8>(originalB * darknessFactor);
+
+	r = static_cast<Uint8>(r * darknessFactor);
+	g = static_cast<Uint8>(g * darknessFactor);
+	b = static_cast<Uint8>(b * darknessFactor);
+
+
+	SDL_SetTextureColorMod(wallTexture, r, g, b);
+
+	// Render the texture
 	SDL_RenderCopy(renderer, wallTexture, &wSrcRect, &wDestRect);
+
+	// Reset the color modulation back to its original state
+	SDL_SetTextureColorMod(wallTexture, originalR, originalG, originalB);
 }

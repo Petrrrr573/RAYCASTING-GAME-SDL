@@ -391,15 +391,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 				if (state[SDL_SCANCODE_F]) {
 					stripe.lineO += 500;
-					for (int i = 0; i < enemies.size(); ++i) {
-						enemies[i].lineO += 500;;
-					}
 				}
 				if (state[SDL_SCANCODE_V]) {
 					stripe.lineO -= 500;
-					for (int i = 0; i < enemies.size(); ++i) {
-						enemies[i].lineO -= 500;;
-					}
 				}
 
 				if (prevColumn < currentColumn) {
@@ -414,7 +408,20 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		rayAngle += degToRad(FOV) / rays;
 	}
 
-	for (int i = 0; i < enemies.size(); ++i) {
+	for (int i = 0; i < enemies.size(); i++) {
+		SDL_Event event;
+
+		const Uint8* state = SDL_GetKeyboardState(NULL);
+
+		SDL_PollEvent(&event);
+
+		if (state[SDL_SCANCODE_F]) {
+			enemies[i].lineO += 500;
+		}
+		if (state[SDL_SCANCODE_V]) {
+			enemies[i].lineO -= 500;
+		}
+
 		enemies[i].srcRect = { 0, 0, 50, 50 };
 		enemies[i].destRect = { int(enemies[i].columnPos - enemies[i].height / 2), int(enemies[i].lineO / 2), int(enemies[i].height), int(enemies[i].height) };
 	}
@@ -437,7 +444,27 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 		while (enemyCount < enemies.size() && stripes[i].distance < enemies[enemyCount].distance) {
 			if (abs(enemies[enemyCount].direction) < FOV) {
+				enemies[enemyCount].darknessFactor = 1.0f - std::min(1.0f, static_cast<float>(enemies[enemyCount].distance) / enemies[enemyCount].maxDistance);
+
+				SDL_GetTextureColorMod(enemies[enemyCount].bodyTexture, &enemies[enemyCount].originalR, &enemies[enemyCount].originalG, &enemies[enemyCount].originalB);
+
+				// Calculate color modulation based on darkness factor
+				Uint8 r = static_cast<Uint8>(enemies[enemyCount].originalR * enemies[enemyCount].darknessFactor);
+				Uint8 g = static_cast<Uint8>(enemies[enemyCount].originalG * enemies[enemyCount].darknessFactor);
+				Uint8 b = static_cast<Uint8>(enemies[enemyCount].originalB * enemies[enemyCount].darknessFactor);
+
+				r = static_cast<Uint8>(r * enemies[enemyCount].darknessFactor);
+				g = static_cast<Uint8>(g * enemies[enemyCount].darknessFactor);
+				b = static_cast<Uint8>(b * enemies[enemyCount].darknessFactor);
+
+
+				SDL_SetTextureColorMod(enemies[enemyCount].bodyTexture, r, g, b);
+
+				// Render the texture
 				SDL_RenderCopy(renderer, enemies[enemyCount].bodyTexture, &enemies[enemyCount].srcRect, &enemies[enemyCount].destRect);
+
+				// Reset the color modulation back to its original state
+				SDL_SetTextureColorMod(enemies[enemyCount].bodyTexture, enemies[enemyCount].originalR, enemies[enemyCount].originalG, enemies[enemyCount].originalB);
 			}
 			enemyCount++;
 		}
@@ -445,7 +472,27 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	}
 	for (int e = enemyCount; e < enemies.size(); e++) {
 		if (abs(enemies[e].direction) < FOV) {
+			enemies[e].darknessFactor = 1.0f - std::min(1.0f, static_cast<float>(enemies[e].distance) / enemies[e].maxDistance);
+
+			SDL_GetTextureColorMod(enemies[e].bodyTexture, &enemies[e].originalR, &enemies[e].originalG, &enemies[e].originalB);
+
+			// Calculate color modulation based on darkness factor
+			Uint8 r = static_cast<Uint8>(enemies[e].originalR * enemies[e].darknessFactor);
+			Uint8 g = static_cast<Uint8>(enemies[e].originalG * enemies[e].darknessFactor);
+			Uint8 b = static_cast<Uint8>(enemies[e].originalB * enemies[e].darknessFactor);
+
+			r = static_cast<Uint8>(r * enemies[e].darknessFactor);
+			g = static_cast<Uint8>(g * enemies[e].darknessFactor);
+			b = static_cast<Uint8>(b * enemies[e].darknessFactor);
+
+
+			SDL_SetTextureColorMod(enemies[e].bodyTexture, r, g, b);
+
+			// Render the texture
 			SDL_RenderCopy(renderer, enemies[e].bodyTexture, &enemies[e].srcRect, &enemies[e].destRect);
+
+			// Reset the color modulation back to its original state
+			SDL_SetTextureColorMod(enemies[e].bodyTexture, enemies[e].originalR, enemies[e].originalG, enemies[e].originalB);
 		}
 	}
 }

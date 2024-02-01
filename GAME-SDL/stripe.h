@@ -7,6 +7,9 @@ public:
 	SDL_Rect wDestRect;
 
 	double distance;
+	float maxDistance = MAXVISIBLEDISTANCE;
+	Uint8 originalR, originalG, originalB;
+	float darknessFactor;
 	int lineO;
 	double height;
 	double width;
