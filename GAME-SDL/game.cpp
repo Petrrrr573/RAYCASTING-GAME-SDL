@@ -189,7 +189,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 		e.columnPos = 1600 - static_cast<short>(round(WIDTH_3D * (0.5f - e.projectionPosition)));
 
-		e.distance = distance(playerX, playerY, e.centeredXPos, e.centeredYPos, playerAngle, playerAngle);
+		e.distance = distance(playerX, playerY, e.centeredXPos, e.centeredYPos, rayAngle, playerAngle);
 		e.height = tilleWidth / e.distance * playerPlaneDistance;
 
 		e.lineO = HEIGHT - e.height / 1.5;
