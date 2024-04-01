@@ -7,6 +7,11 @@ public:
 	SDL_Rect wDestRect;
 
 	double distance;
+	double horizontalY, horizontalX; // x, y possitions of horizontal rays
+	double verticalY, verticalX; // x, y possitions of vertical rays
+	double horizontalDistance = INFINITY, verticalDistance = INFINITY; // distances of final rays
+	double y = -1, x = -1;
+	int mx, my, mp; // possition on a map
 	float maxDistance = MAXVISIBLEDISTANCE;
 	Uint8 originalR, originalG, originalB;
 	float darknessFactor;

@@ -30,7 +30,7 @@ void Stripe::Set(int tilleWidth, std::vector<int>& map, int mp, int rayX, int ra
 	}
 	wSrcRect = { srcX, srcY, 1, 50 };
 	wDestRect = { int(columnPos), int(lineO / 2), int(width), int(height) };
-}
+	}
 
 void Stripe::Draw(SDL_Renderer* renderer) {
 	darknessFactor = 1.0f - std::min(1.0f, static_cast<float>(distance) / maxDistance);

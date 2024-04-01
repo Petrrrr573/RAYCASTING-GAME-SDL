@@ -12,6 +12,7 @@ public:
 	std::vector<std::vector<float>> rayHits;
 
 	std::vector<Stripe> stripes;
+	std::vector<Stripe> tempStripes;
 	std::vector<Enemy> enemies;
 
 	int minimapWidth = 320;
@@ -33,7 +34,7 @@ public:
 
 	double lineO;
 
-
+	int maxDof = 20;
 
 	void MakeWindow(const char* name, int width, int height);
 	void DrawMap(int tilleWidth);

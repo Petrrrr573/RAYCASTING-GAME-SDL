@@ -67,7 +67,7 @@ void Game::DrawMap(int tilleWidth) {
 			SDL_SetRenderDrawColor(renderer, WALL_COLOR_2_2);
 		}
 		else if (hit[0] == 3) {
-			SDL_SetRenderDrawColor(renderer, 170, 120, 120, 255);
+			SDL_SetRenderDrawColor(renderer, 170, 0, 120, 255);
 		}
 		else if (hit[0] == 4) {
 			SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
@@ -75,7 +75,10 @@ void Game::DrawMap(int tilleWidth) {
 		else {
 			SDL_SetRenderDrawColor(renderer, WALL_COLOR_3);
 		}
-		SDL_RenderDrawLine(renderer, hit[3] / this->tilleWidth * minimapTilleWidth, hit[4] / this->tilleWidth * minimapTilleWidth, hit[1] / this->tilleWidth * minimapTilleWidth, hit[2] / this->tilleWidth * minimapTilleWidth);
+		//SDL_RenderDrawLine(renderer, hit[3] / this->tilleWidth * minimapTilleWidth, hit[4] / this->tilleWidth * minimapTilleWidth, hit[1] / this->tilleWidth * minimapTilleWidth, hit[2] / this->tilleWidth * minimapTilleWidth);
+		/*SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		SDL_Rect rect = { hit[1] / this->tilleWidth * minimapTilleWidth,hit[2] / this->tilleWidth * minimapTilleWidth,2, 2 };
+		SDL_RenderFillRect(renderer, &rect);*/
 	}
 	rayHits.clear();
 
@@ -141,9 +144,9 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	stripes.clear();
 	double rayY = -1, rayX = -1;
 
-	double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
-	double verticalY = 0, verticalX = 0; // x, y possitions of vertical rays
-	double horizontalDistance = 0, verticalDistance = 0; // distances of final rays
+	//double horizontalY = 0, horizontalX = 0; // x, y possitions of horizontal rays
+	//double verticalY = 0, verticalX = 0; // x, y possitions of vertical rays
+	//double horizontalDistance = 0, verticalDistance = 0; // distances of final rays
 
 	double xOffset = 0, yOffset = 0;
 
@@ -197,12 +200,16 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	for (int r = 0; r < rays; r++) {
 		Stripe stripe(renderer, wallTexture);
+		Stripe stripe2(renderer, wallTexture);
+
+		/* ---------------------------------------- Basic for setting the main possitions of the ray ---------------------------------------- */
 		if (rayAngle < 0) {
 			rayAngle += 2 * PI;
 		}
 		if (rayAngle > 2 * PI) {
 			rayAngle -= 2 * PI;
 		}
+
 		/* --- Check horizontal lines--- */
 		dof = 0;
 		double aTan = -1 / tan(rayAngle);
@@ -210,7 +217,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		// looking straight left or right
 		if (rayAngle <= 0 || rayAngle == PI) {
 			rayX = playerX; rayY = playerY;
-			dof = 30;
+			dof = maxDof;
 		}
 
 		// looking up
@@ -231,8 +238,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			xOffset = -yOffset * aTan;
 		}
 
-
-		while (dof < 30) {
+		while (dof < maxDof) {
 			if (rayAngle > PI) {
 				my = int(floor((rayY - 1) / tilleWidth));
 			}
@@ -240,12 +246,34 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				my = int(floor(rayY / tilleWidth));
 			}
 			mx = int(floor(rayX / tilleWidth));
-			mp = my * mapX + mx;	
+			mp = my * mapX + mx;
 
 			// hit wall
 			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
-				dof = 30;
-				break;
+				SDL_Rect rect = { rayX / this->tilleWidth * minimapTilleWidth,rayY / this->tilleWidth * minimapTilleWidth,3,3 };
+				switch (map[mp]) {
+				case 1:
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					break;
+				case 3:
+					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+					break;
+				case 0:
+					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+					break;
+				}
+				SDL_RenderFillRect(renderer, &rect);
+				if (map[mp] == 3) {
+					stripe2.horizontalY = rayY, stripe2.horizontalX = rayX;
+					stripe2.horizontalDistance = distance(playerX, playerY, stripe2.horizontalX, stripe2.horizontalY, rayAngle, playerAngle);
+					dof++;
+					rayX += xOffset;
+					rayY += yOffset;
+				}
+				else {
+					dof = maxDof;
+					break;
+				}
 			}
 			else {
 				dof++;
@@ -254,8 +282,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			}
 		}
 
-		horizontalY = rayY, horizontalX = rayX;
-		horizontalDistance = distance(playerX, playerY, horizontalX, horizontalY, rayAngle, playerAngle);
+		stripe.horizontalY = rayY, stripe.horizontalX = rayX;
+		stripe.horizontalDistance = distance(playerX, playerY, stripe.horizontalX, stripe.horizontalY, rayAngle, playerAngle);
 
 		/* --- Check vertical lines--- */
 
@@ -265,7 +293,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		// looking straight up or down
 		if (rayAngle == PI3 || rayAngle == PI2) {
 			rayX = playerX; rayY = playerY;
-			dof = 30;
+			dof = maxDof;
 		}
 
 		// looking right
@@ -286,7 +314,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			yOffset = -xOffset * nTan;
 		}
 
-		while (dof < 30) {
+		while (dof < maxDof) {
 			if (rayAngle > PI2 && rayAngle < PI3) {
 				mx = int(floor((rayX - 1) / tilleWidth));
 			}
@@ -298,8 +326,30 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 			// hit wall
 			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
-				dof = 30;
-				break;
+				SDL_Rect rect = { rayX / this->tilleWidth * minimapTilleWidth,rayY / this->tilleWidth * minimapTilleWidth,3,3 };
+				switch (map[mp]) {
+				case 1:
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+					break;
+				case 3:
+					SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+					break;
+				case 0:
+					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+					break;
+				}
+				SDL_RenderFillRect(renderer, &rect);
+				if (map[mp] == 3) {
+					stripe2.verticalY = rayY, stripe2.verticalX = rayX;
+					stripe2.verticalDistance = distance(playerX, playerY, stripe2.verticalX, stripe2.verticalY, rayAngle, playerAngle);
+					dof++;
+					rayX += xOffset;
+					rayY += yOffset;
+				}
+				else {
+					dof = maxDof;
+					break;
+				}
 			}
 			else {
 				dof++;
@@ -308,103 +358,109 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			}
 		}
 
-		verticalY = rayY, verticalX = rayX;
-		verticalDistance = distance(playerX, playerY, verticalX, verticalY, rayAngle, playerAngle);
+		stripe.verticalY = rayY, stripe.verticalX = rayX;
+		stripe.verticalDistance = distance(playerX, playerY, stripe.verticalX, stripe.verticalY, rayAngle, playerAngle);
 
-		// Get shorter distance
-		if (horizontalDistance > verticalDistance) {
-			rayX = verticalX;
-			rayY = verticalY;
-			stripe.distance = verticalDistance;
-			stripe.horizontalHit = false;
-		}
-		else if (horizontalDistance < verticalDistance) {
-			rayX = horizontalX;
-			rayY = horizontalY;
-			stripe.distance = horizontalDistance;
-			stripe.horizontalHit = true;
-		}
+		tempStripes.push_back(stripe);
+		tempStripes.push_back(stripe2);
 
-		//draws the rays on the minimap
-		if (rayX >= 0 && rayX <= WIDTH/2) {
-			if (rayY >= 0 && rayY <= HEIGHT) {
-				if (stripe.horizontalHit == true) {
-					if (rayAngle > PI) {
-						my = int(floor((rayY - 1) / tilleWidth));
+		for (Stripe& stripe : tempStripes) {
+			// Get shorter distance
+			if (stripe.horizontalDistance > stripe.verticalDistance) {
+				stripe.x = stripe.verticalX;
+				stripe.y = stripe.verticalY;
+				stripe.distance = stripe.verticalDistance;
+				stripe.horizontalHit = false;
+			}
+			else if (stripe.horizontalDistance < stripe.verticalDistance) {
+				stripe.x = stripe.horizontalX;
+				stripe.y = stripe.horizontalY;
+				stripe.distance = stripe.horizontalDistance;
+				stripe.horizontalHit = true;
+			}
+
+			//draws the rays on the minimap
+			if (true) {
+				if (true) {
+					if (stripe.horizontalHit == true) {
+						if (rayAngle > PI) {
+							stripe.my = int(floor((stripe.y - 1) / tilleWidth));
+						}
+						else {
+							stripe.my = int(floor(stripe.y / tilleWidth));
+						}
+						stripe.mx = int(floor(stripe.x / tilleWidth));
 					}
 					else {
-						my = int(floor(rayY / tilleWidth));
+						if (rayAngle > PI2 && rayAngle < PI3) {
+							stripe.mx = int(floor((stripe.x - 1) / tilleWidth));
+						}
+						else {
+							stripe.mx = int(floor(stripe.x / tilleWidth));
+						}
+						stripe.my = int(floor(stripe.y / tilleWidth));
 					}
-					mx = int(floor(rayX / tilleWidth));
-				}
-				else {
-					if (rayAngle > PI2 && rayAngle < PI3) {
-						mx = int(floor((rayX - 1) / tilleWidth));
+					stripe.mp = stripe.my * mapX + stripe.mx;
+
+					//// hit wall
+					if (stripe.mp > 0 && stripe.mp < mapX * mapY) {
+						rayHits.push_back({ float(map[stripe.mp]), float(stripe.x), float(stripe.y), float(playerX), float(playerY) });
 					}
-					else {
-						mx = int(floor(rayX / tilleWidth));
-					}
-					my = int(floor(rayY / tilleWidth));
-				}
-				mp = my * mapX + mx;
 
-				// hit wall
-				if (mp > 0 && mp < mapX * mapY) {
-					rayHits.push_back({float(map[mp]), float(rayX), float(rayY), float(playerX), float(playerY)});
-				}
-				 
 
-				// Calculate the ray direction relative to the player's view
-				float rayDirection = FOV * (0.5f * WIDTH_3D - (float)r) / (rays-1);
-
-				// Calculate the position of the column in the projection
-				float rayProjectionPosition = 0.5f * tan(degToRad(rayDirection)) / tan(0.5f * degToRad(FOV));
-
-				// Adjust the position based on the current ray angle
-				currentColumn = static_cast<short>(round(WIDTH_3D * (0.5f - rayProjectionPosition)));
-				nextColumn = WIDTH_3D;
-
-				stripe.height = tilleWidth / stripe.distance * playerPlaneDistance;
-
-				float idk = 0;
-				if (currentColumn < 0) {
-					idk = -currentColumn;
-				}
-
-				if (r + 1  < rays) {
-					float nextRayDirection = FOV * (0.5f * WIDTH_3D - (float)(r + 1)) / (rays-1);
-
+					// Calculate the ray direction relative to the player's view
+					float rayDirection = FOV * (0.5f * WIDTH_3D - (float)r) / (rays - 1);
+						
 					// Calculate the position of the column in the projection
-					float nextRayProjectionPosition = 0.5f * tan(degToRad(nextRayDirection)) / tan(0.5f * degToRad(FOV));
+					float rayProjectionPosition = 0.5f * tan(degToRad(rayDirection)) / tan(0.5f * degToRad(FOV));
 
 					// Adjust the position based on the current ray angle
-					nextColumn = static_cast<short>(round(WIDTH_3D * (0.5f - nextRayProjectionPosition)));
-				}
+					currentColumn = static_cast<short>(round(WIDTH_3D * (0.5f - rayProjectionPosition)));
+					nextColumn = WIDTH_3D;
+					 
+					stripe.height = tilleWidth / stripe.distance * playerPlaneDistance;
 
-				stripe.lineO = HEIGHT - stripe.height / 1.5;
+					float idk = 0;
+					if (currentColumn < 0) {
+						idk = -currentColumn;
+					}
 
-				SDL_Event event;
+					if (r + 1 < rays) {
+						float nextRayDirection = FOV * (0.5f * WIDTH_3D - (float)(r + 1)) / (rays - 1);
 
-				const Uint8* state = SDL_GetKeyboardState(NULL);
+						// Calculate the position of the column in the projection
+						float nextRayProjectionPosition = 0.5f * tan(degToRad(nextRayDirection)) / tan(0.5f * degToRad(FOV));
 
-				SDL_PollEvent(&event);
+						// Adjust the position based on the current ray angle
+						nextColumn = static_cast<short>(round(WIDTH_3D * (0.5f - nextRayProjectionPosition)));
+					}
 
-				if (state[SDL_SCANCODE_F]) {
-					stripe.lineO += 500;
-				}
-				if (state[SDL_SCANCODE_V]) {
-					stripe.lineO -= 500;
-				}
+					stripe.lineO = HEIGHT - stripe.height / 1.5;
 
-				if (prevColumn < currentColumn) {
-					if (mp > 0 && mp < mapX * mapY) {
+					SDL_Event event;
 
-						stripe.Set(tilleWidth, map, mp, rayX, rayY, rayAngle, currentColumn, nextColumn, idk);
+					const Uint8* state = SDL_GetKeyboardState(NULL);
+
+					SDL_PollEvent(&event);
+
+					if (state[SDL_SCANCODE_F]) {
+						stripe.lineO += 700;
+					}
+					if (state[SDL_SCANCODE_V]) {
+						stripe.lineO -= 700;
+					}
+
+					if (prevColumn < currentColumn) {
+						if (stripe.mp > 0 && stripe.mp < mapX * mapY) {
+							stripe.Set(tilleWidth, map, stripe.mp, stripe.x, stripe.y, rayAngle, currentColumn, nextColumn, idk);
+						}
 					}
 				}
 			}
+
+			stripes.push_back(stripe);
 		}
-		stripes.push_back(stripe);
+		tempStripes.clear();
 		rayAngle += degToRad(FOV) / rays;
 	}
 
@@ -416,10 +472,10 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		SDL_PollEvent(&event);
 
 		if (state[SDL_SCANCODE_F]) {
-			enemies[i].lineO += 500;
+			enemies[i].lineO += 700;
 		}
 		if (state[SDL_SCANCODE_V]) {
-			enemies[i].lineO -= 500;
+			enemies[i].lineO -= 700;
 		}
 
 		enemies[i].srcRect = { 0, 0, 50, 50 };

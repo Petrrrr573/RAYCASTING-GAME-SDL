@@ -43,10 +43,10 @@ int main(int argc, char** argv){
 
 	// GAME PART
 	Player player(100,100);
-	Enemy enemy(200,200, 0);
-	Enemy enemy2(200, 300, 1);
+	Enemy enemy(200,600, 0);
+	//Enemy enemy2(200, 300, 1);
 	game.enemies.push_back(enemy);
-	game.enemies.push_back(enemy2);
+	//game.enemies.push_back(enemy2);
 
 	game.MakeWindow("Raycaster", WIDTH, HEIGHT);
 	game.isRunning = true;
@@ -71,10 +71,10 @@ int main(int argc, char** argv){
 
 
 		SDL_RenderClear(game.renderer);
+		game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
 
-		game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		player.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
 
