@@ -21,14 +21,14 @@ void Stripe::Set(int tilleWidth, std::vector<int>& map, int mp, int rayX, int ra
 		}
 	}
 
-	if (map[mp] == 4) {
-		srcY = 49;
-		srcX += 0;
+	if (map[mp] >= 4) {
+		srcY = 50;
+		srcX += (map[mp] - 4) * 50;
 	}
 	else {
 		srcX += (map[mp] - 1) * 50;
 	}
-	wSrcRect = { srcX, srcY, 1, 50 };
+	wSrcRect = { srcX, srcY, 1, 50};
 	wDestRect = { int(columnPos), int(lineO / 2), int(width), int(height) };
 	}
 

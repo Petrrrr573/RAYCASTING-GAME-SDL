@@ -8,7 +8,7 @@ void Player::Update(SDL_Renderer* renderer, int tilleWidth, int mapX) {
 	playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
 	SDL_FreeSurface(playerSurface);
 
-	scale = 16 / mapX;
+	scale = tilleWidth/2;
 	if (scale <= 0) {
 		scale = 0.5;
 	}
@@ -69,11 +69,22 @@ void Player::Input(bool& isRunning, int tilleWidth, int mapX, int mapY, int mapS
 			xPos -= pdx;
 		}
 	}
-	lookingPos = floor((yPos+pWidthScaled/2 + pdy*10)/tilleWidth) * mapX + floor((xPos + pWidthScaled / 2 + pdx*10)/tilleWidth);
-	if (map[lookingPos] == 4) {
-		if (state[SDL_SCANCODE_E]) {
-			map[lookingPos] = 0;
+	playerCooldown++;
+	if (state[SDL_SCANCODE_E]) {
+		lookingPos = floor((yPos + pWidthScaled / 2 + pdy * 10) / tilleWidth) * mapX + floor((xPos + pWidthScaled / 2 + pdx * 10) / tilleWidth);
+		if (map[lookingPos] == 4) {
+			map[lookingPos] = 5;
+			playerCooldown = 0;
 		}
+	}
+
+	if (map[lookingPos] == 5 && playerCooldown/5 > 1) {
+		map[lookingPos] = 6;
+		playerCooldown = 0;
+	}
+	if (map[lookingPos] == 6 && playerCooldown/5 > 1) {
+		map[lookingPos] = 0;
+		playerCooldown = 0;
 	}
 }
 
@@ -85,7 +96,7 @@ void Player::Draw(SDL_Renderer* renderer, int tilleWidth) {
 
 	// Set up the source and destination rectangles
 	SDL_Rect srcRect = { srcX, srcY, playerWidth, playerHeight };
-	SDL_Rect destRect = {xPos/50*tilleWidth, yPos/50*tilleWidth, 10*scale, 10*scale};
+	SDL_Rect destRect = {xPos/50*tilleWidth, yPos/50*tilleWidth, scale, scale};
 
 	// Render the player's current frame
 	SDL_RenderCopy(renderer, playerTexture, &srcRect, &destRect);

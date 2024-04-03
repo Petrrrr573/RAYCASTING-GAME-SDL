@@ -12,6 +12,9 @@ class MapEditor {
 		Button saveButton;
 		Button loadButton;
 
+		double playerXPos = 100;
+		double playerYPos = 100;
+
 		Button wall1;
 		Button wall2;
 		Button wall3;

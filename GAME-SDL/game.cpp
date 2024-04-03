@@ -265,7 +265,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					break;
 				}
 				SDL_RenderFillRect(renderer, &rect);
-				if (map[mp] == 3) {
+				if (map[mp] >= 3) {
 					while (tempStripes.size() < transparentWallsIndex + 1) {
 						tempStripes.push_back(Stripe(renderer, wallTexture));
 					}
@@ -347,7 +347,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					break;
 				}
 				SDL_RenderFillRect(renderer, &rect);
-				if (map[mp] == 3) {
+				if (map[mp] >= 3) {
 					while (tempStripes.size() < transparentWallsIndex + 1) {
 						tempStripes.push_back(Stripe(renderer, wallTexture));
 					}

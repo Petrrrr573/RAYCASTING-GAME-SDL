@@ -22,6 +22,8 @@ int main(int argc, char** argv){
 	MapEditor editor(game.renderer);
 	editor.isRunning = true;
 
+	Player player(editor.playerXPos, editor.playerYPos);
+
 	while (editor.isRunning) {
 		game.HandleFps();
 		game.Input(editor.isRunning);
@@ -31,6 +33,10 @@ int main(int argc, char** argv){
 		game.DrawMap(game.mapEditorTilleWidth); // Draws the map
 
 		editor.update(game.mapX, game.mapY, game.mapSize, game.map, game.mapEditorTilleWidth, game.renderer);
+		player.xPos = editor.playerXPos;
+		player.yPos = editor.playerYPos;
+		player.Update(game.renderer, game.mapEditorTilleWidth, game.mapX);
+		player.Draw(game.renderer, game.mapEditorTilleWidth);
 
 		SDL_SetRenderDrawColor(game.renderer, SKY_COLOR); // Draws the background
 
@@ -42,7 +48,6 @@ int main(int argc, char** argv){
 
 
 	// GAME PART
-	Player player(100,100);
 	Enemy enemy(200,600, 0);
 	//Enemy enemy2(200, 300, 1);
 	game.enemies.push_back(enemy);
@@ -71,10 +76,10 @@ int main(int argc, char** argv){
 
 
 		SDL_RenderClear(game.renderer);
-		game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		game.raycasting(player.xPos, player.yPos, player.playerAngle, player.currentFrame, player.pWidthScaled);
 
+		game.DrawMap(game.minimapTilleWidth); // Draws the map
 
 		player.Draw(game.renderer, game.minimapTilleWidth); // Draws the player
 

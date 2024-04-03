@@ -24,6 +24,8 @@ public:
 
 	int currentFrame = 0;
 
+	int playerCooldown = 0;
+
 	double pdx = cos(playerAngle) * playerSpeed;
 	double pdy = sin(playerAngle) * playerSpeed;
 
