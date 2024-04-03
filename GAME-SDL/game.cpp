@@ -173,6 +173,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 	short currentColumn = 0;
 	short nextColumn = 0;
 
+	int transparentWallsIndex = 0;
+
 	for (Enemy& e : enemies) {
 		e.centeredXPos = e.xPos + e.pWidthScaled / 2;
 		e.centeredYPos = e.yPos + e.pWidthScaled / 2;
@@ -200,7 +202,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 
 	for (int r = 0; r < rays; r++) {
 		Stripe stripe(renderer, wallTexture);
-		Stripe stripe2(renderer, wallTexture);
+		//Stripe stripe2(renderer, wallTexture);
 
 		/* ---------------------------------------- Basic for setting the main possitions of the ray ---------------------------------------- */
 		if (rayAngle < 0) {
@@ -264,11 +266,15 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 				SDL_RenderFillRect(renderer, &rect);
 				if (map[mp] == 3) {
-					stripe2.horizontalY = rayY, stripe2.horizontalX = rayX;
-					stripe2.horizontalDistance = distance(playerX, playerY, stripe2.horizontalX, stripe2.horizontalY, rayAngle, playerAngle);
+					while (tempStripes.size() < transparentWallsIndex + 1) {
+						tempStripes.push_back(Stripe(renderer, wallTexture));
+					}
+					tempStripes[transparentWallsIndex].horizontalY = rayY, tempStripes[transparentWallsIndex].horizontalX = rayX;
+					tempStripes[transparentWallsIndex].horizontalDistance = distance(playerX, playerY, tempStripes[transparentWallsIndex].horizontalX, tempStripes[transparentWallsIndex].horizontalY, rayAngle, playerAngle);
 					dof++;
 					rayX += xOffset;
 					rayY += yOffset;
+					transparentWallsIndex++;
 				}
 				else {
 					dof = maxDof;
@@ -314,6 +320,8 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			yOffset = -xOffset * nTan;
 		}
 
+		transparentWallsIndex = 0;
+
 		while (dof < maxDof) {
 			if (rayAngle > PI2 && rayAngle < PI3) {
 				mx = int(floor((rayX - 1) / tilleWidth));
@@ -340,11 +348,15 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 				}
 				SDL_RenderFillRect(renderer, &rect);
 				if (map[mp] == 3) {
-					stripe2.verticalY = rayY, stripe2.verticalX = rayX;
-					stripe2.verticalDistance = distance(playerX, playerY, stripe2.verticalX, stripe2.verticalY, rayAngle, playerAngle);
+					while (tempStripes.size() < transparentWallsIndex + 1) {
+						tempStripes.push_back(Stripe(renderer, wallTexture));
+					}
+					tempStripes[transparentWallsIndex].verticalY = rayY, tempStripes[transparentWallsIndex].verticalX = rayX;
+					tempStripes[transparentWallsIndex].verticalDistance = distance(playerX, playerY, tempStripes[transparentWallsIndex].verticalX, tempStripes[transparentWallsIndex].verticalY, rayAngle, playerAngle);
 					dof++;
 					rayX += xOffset;
 					rayY += yOffset;
+					transparentWallsIndex++;
 				}
 				else {
 					dof = maxDof;
@@ -362,7 +374,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 		stripe.verticalDistance = distance(playerX, playerY, stripe.verticalX, stripe.verticalY, rayAngle, playerAngle);
 
 		tempStripes.push_back(stripe);
-		tempStripes.push_back(stripe2);
+		//tempStripes.push_back(stripe2);
 
 		for (Stripe& stripe : tempStripes) {
 			// Get shorter distance
