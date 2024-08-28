@@ -253,18 +253,6 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 			// hit wall
 			if (mp > 0 && mp < mapX * mapY && map[mp] != 0) {
 				SDL_Rect rect = { rayX / this->tilleWidth * minimapTilleWidth,rayY / this->tilleWidth * minimapTilleWidth,3,3 };
-				switch (map[mp]) {
-				case 1:
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-					break;
-				case 3:
-					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-					break;
-				case 0:
-					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-					break;
-				}
-				SDL_RenderFillRect(renderer, &rect);
 				if (map[mp] >= 3) {
 					while (tempStripes.size() < transparentWallsIndex + 1) {
 						tempStripes.push_back(Stripe(renderer, wallTexture));
@@ -346,7 +334,7 @@ void Game::raycasting(double xPos, double yPos, double playerAngle, int& current
 					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 					break;
 				}
-				SDL_RenderFillRect(renderer, &rect);
+				//SDL_RenderFillRect(renderer, &rect);
 				if (map[mp] >= 3) {
 					while (tempStripes.size() < transparentWallsIndex + 1) {
 						tempStripes.push_back(Stripe(renderer, wallTexture));
